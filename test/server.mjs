@@ -9,7 +9,7 @@ import worker from '../worker.js';
 const PORT = +process.env.PORT || 8787;
 const PUB = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../public');
 let sql = new DatabaseSync(':memory:');
-const K = { delay: 0, down: false, pin: '2468' };
+const K = { delay: 0, down: false, pin: '2468', access: false };
 
 function stmt(q, args = []) {
   const o = {
@@ -39,13 +39,14 @@ http.createServer(async (rq, rs) => {
   const body = Buffer.concat(chunks);
   if (rq.url === '/__knob') {
     const o = JSON.parse(body.toString() || '{}');
-    if ('delay' in o) K.delay = o.delay; if ('down' in o) K.down = o.down; if ('pin' in o) K.pin = o.pin;
+    if ('access' in o) K.access = o.access; if ('delay' in o) K.delay = o.delay; if ('down' in o) K.down = o.down; if ('pin' in o) K.pin = o.pin;
     if (o.reset) { sql = new DatabaseSync(':memory:'); }
     if (o.clearGuard) { try { sql.exec('DELETE FROM guard'); } catch (e) { /* no table yet */ } }
     if (o.raw) { try { rs.end(JSON.stringify(sql.prepare("SELECT name, rev FROM slots").all())); } catch (e) { rs.end('[]'); } return; }
     rs.end('ok'); return;
   }
   if (K.down && rq.url.startsWith('/api/')) { rq.socket.destroy(); return; }
+  if (K.access && rq.url.startsWith('/api/')) { rs.writeHead(302, { Location: 'https://alice.cloudflareaccess.com/cdn-cgi/access/login' }); rs.end(); return; }
   if (K.delay && rq.url.startsWith('/api/')) await new Promise(r => setTimeout(r, K.delay));
   const headers = new Headers(); for (const [k, v] of Object.entries(rq.headers)) if (typeof v === 'string') headers.set(k, v);
   const req = new Request('http://localhost:' + PORT + rq.url, { method: rq.method, headers, body: ['GET', 'HEAD'].includes(rq.method) ? undefined : body });

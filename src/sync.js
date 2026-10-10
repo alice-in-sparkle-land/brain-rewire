@@ -134,10 +134,13 @@ async function api(method, path, body, pin, server) {
   const headers = { 'X-Pin': pin == null ? SC.pin : pin };
   if (body) headers['Content-Type'] = 'application/json';
   let r;
-  try { r = await fetch(base + '/api' + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', signal: ctl ? ctl.signal : undefined }); }
+  try { r = await fetch(base + '/api' + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', redirect: 'manual', signal: ctl ? ctl.signal : undefined }); }
   catch (e) { throw { kind: 'net', msg: e && e.message }; }
   finally { clearTimeout(tm); }
+  /* Cloudflare Access answers an expired sign-in with a redirect to its login page */
+  if (r.type === 'opaqueredirect' || (r.status >= 300 && r.status < 400)) throw { kind: 'auth' };
   let j = null; try { j = await r.json(); } catch (e) { /* not json */ }
+  if (!j && (r.status === 401 || r.status === 403)) throw { kind: 'auth' };
   if (r.status === 401) throw { kind: 'pin', left: j && j.triesLeft };
   if (r.status === 429) throw { kind: 'locked', wait: (j && j.retryIn) || 900 };
   if (r.status === 409 && j) return { conflict: true, ...j };
@@ -152,6 +155,7 @@ function syncErrText(e) {
     locked: `Too many wrong PINs. Sync is paused for ${Math.ceil((e.wait || 900) / 60)} min.`,
     setup: 'The sync site isn’t set up yet: ' + (e.msg || ''),
     noserver: 'Add the address of your sync site first.',
+    auth: 'Your sign-in to Alice’s Cabinet has expired. Changes are kept on this phone until you sign in again.',
     foreign: 'That cloud space holds data from another tool.',
     bad: e.msg || 'Cloud data could not be read.',
     server: 'The sync site had a problem (' + (e.msg || 'unknown') + '). It will try again.'
@@ -196,7 +200,7 @@ function afterRemote() {
 async function syncNow(manual) {
   if (!SC.on) return setSync('off');
   if (SY.busy) { SY.again = true; return; }
-  if (!manual && SY.st === 'pin') return;
+  if (!manual && (SY.st === 'pin' || SY.st === 'auth')) return;
   if (!manual && SY.st === 'locked' && Date.now() < SY.until) return;
   if (navigator.onLine === false) return setSync('offline');
   SY.busy = true; setSync('busy');
@@ -223,7 +227,7 @@ async function syncNow(manual) {
 }
 /* When the page is hidden, try one last quick save (small data only). */
 function flushOnHide() {
-  if (!SC.on || SY.busy || SY.gen === SY.clean || SY.st === 'pin' || SY.st === 'locked') return;
+  if (!SC.on || SY.busy || SY.gen === SY.clean || SY.st === 'pin' || SY.st === 'locked' || SY.st === 'auth') return;
   try {
     const str = payloadStr(); if (hashStr(str) === SC.hash) return;
     const body = JSON.stringify({ base: SC.rev, data: str });
@@ -272,6 +276,7 @@ function syncInner() {
     <div class="row0" style="margin-top:8px"><span class="sdot s-${SY.st}" style="position:static"></span><div style="font-size:14px;flex:1">${esc(syncLine())}</div></div>
     ${SY.st !== 'ok' && SY.st !== 'busy' && SY.msg && SY.msg !== syncLine() ? `<p class="sm" style="margin:6px 0 0">${esc(SY.msg)}</p>` : ''}
     <p class="sm" style="margin:6px 0 0">Site: ${esc((apiBase() || '').replace(/^https?:\/\//, ''))} · last synced ${esc(ago(SC.last))}</p>
+    ${SY.st === 'auth' ? '<button class="btn w" style="margin-top:10px" data-act="signIn">Sign in again</button>' : ''}
     ${bad ? `<div class="row0" style="margin-top:8px"><input class="in" id="spin2" name="spin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="PIN" style="flex:1"><button class="btn" data-act="syncPin">Try PIN</button></div>` : ''}
     <div class="btns"><button class="btn" data-act="syncNowBtn">Sync now</button><button class="btn g" data-act="syncOff">Disconnect</button></div>`;
 }

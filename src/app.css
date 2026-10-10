@@ -21,7 +21,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .clock{margin-left:auto;font:500 28px/1 var(--mono);letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
 .backb{width:42px;height:42px;border-radius:50%;background:rgba(255,253,248,.85);color:#1E2733;display:grid;place-items:center;font-size:24px;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .sdot{width:10px;height:10px;border-radius:50%;background:#9AA0A6;box-shadow:0 0 0 2px rgba(255,255,255,.8);flex:none}
-.s-ok{background:#3E9B5B}.s-busy{background:#E09A2D}.s-offline,.s-off{background:#9AA0A6}.s-pin,.s-locked,.s-error,.s-server,.s-setup,.s-foreign,.s-bad,.s-noserver{background:#C9473F}
+.s-ok{background:#3E9B5B}.s-busy{background:#E09A2D}.s-offline,.s-off{background:#9AA0A6}.s-pin,.s-auth,.s-locked,.s-error,.s-server,.s-setup,.s-foreign,.s-bad,.s-noserver{background:#C9473F}
 .wrap{position:relative;margin:-36px auto 0;padding:0 14px;max-width:560px}
 .banner{background:#7A2E3A;color:#fff;font-size:13.5px;padding:9px 14px;display:flex;gap:10px;align-items:center}
 .banner button{text-decoration:underline;font-weight:600}

@@ -5,7 +5,7 @@ One app for your **Map** (boundary circle), **People** (traits, actions with fiv
 | Piece | Name |
 |---|---|
 | GitHub repository | `brain-rewire` (private) |
-| Worker = address | `brain-rewire` → `https://brain-rewire.emile-cao.workers.dev` |
+| Worker = address | `brain-rewire` → `https://kokoro.alicecabinet.com` (also `brain-rewire.emile-cao.workers.dev`) |
 | D1 database | `brain-rewire-db` (ID already in `wrangler.jsonc`) |
 | PIN | Runtime secret `PIN` on the Worker, 4–8 digits |
 | App file | `public/kokoro.html` (the site opens it) |
@@ -16,12 +16,17 @@ One app for your **Map** (boundary circle), **People** (traits, actions with fiv
 1. **Repository.** On GitHub, create a new **private** repository called `brain-rewire`. Upload everything in this folder: `wrangler.jsonc`, `worker.js`, the `public` folder (and `src`, `build.py`, `test` if you want the source too).
 2. **Worker.** In Cloudflare: **Workers & Pages → Create → Import a repository →** pick `brain-rewire`. Keep the deploy command `npx wrangler deploy`. The Worker name must be `brain-rewire` (the same as `"name"` in `wrangler.jsonc`).
 3. **PIN.** Worker → **Settings → Runtime variables and secrets** (near Bindings) → **Add** → Type **Secret** → name `PIN` → your digits. Not the "Variables and secrets" under **Build**: the running app can't see those.
-4. **Check.** Open `https://brain-rewire.emile-cao.workers.dev/api/ping`.
+4. **Address.** Worker → Settings → Domains & Routes → Add → Custom domain → `kokoro.alicecabinet.com`.
+5. **Check.** Open `https://kokoro.alicecabinet.com/api/ping` (after signing in, if Cloudflare Access is on).
    - `"error":"pin"` means it's working.
    - `"error":"setup"` says what's missing (the database link or the PIN).
-5. **Phone.** Open `https://brain-rewire.emile-cao.workers.dev` in Chrome. Tap ⋮ → **Add to Home screen**. In Kokoro go to **Settings → Cloud sync**, enter your PIN and tap **Connect**. After the first visit it opens without internet too.
+6. **Phone.** Open `https://kokoro.alicecabinet.com` in Chrome. Tap ⋮ → **Add to Home screen**. In Kokoro go to **Settings → Cloud sync**, enter your PIN and tap **Connect**. After the first visit it opens without internet too.
 
 The database link lives in `wrangler.jsonc`, so a deploy from GitHub keeps it. The PIN secret also survives deploys.
+
+## Cloudflare Access
+
+Kokoro sits behind the Access sign-in for Alice's Cabinet. When the sign-in runs out, Cloud sync shows **Sign in again**. Your changes stay on the phone and sync after you sign in.
 
 ## Bring over your old data (once)
 

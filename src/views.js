@@ -687,6 +687,7 @@ const ACTIONS = {
   connMerge: () => { finishConnect('merge'); closeSheet(); syncNow(true); softRender(); toast('Connected and merged'); },
   connCloud: el => { if (!armed(el, 'Tap again: use the cloud copy')) return; finishConnect('cloud'); closeSheet(); syncNow(true); softRender(); toast('Connected'); },
   syncNowBtn: () => syncNow(true),
+  signIn: () => { flushTyping(); persist(); location.reload(); },
   syncPin: () => { const v = ($('#spin2').value || '').trim(); if (!/^\d{4,8}$/.test(v)) return toast('Enter 4 to 8 digits'); SC.pin = v; saveSC(); SY.st = 'busy'; syncNow(true); },
   syncOff: el => { if (!armed(el, 'Tap again to disconnect')) return; disconnectSync(); softRender(); toast('Sync is off. Your data stays on this phone.'); }
 };

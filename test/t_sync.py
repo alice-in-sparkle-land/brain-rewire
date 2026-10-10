@@ -138,6 +138,15 @@ with sync_playwright() as p:
     C.click('[data-act=eraseAll]'); C.click('[data-act=eraseAll]'); sync(C); sync(A)
     ok('erase all spreads', texts(A) == [] and texts(C) == [])
 
+    # Cloudflare Access sign-in expired: the API answers with a redirect to the login page
+    knob(access=True); add_thought(A, 'While signed out'); sync(A)
+    ok('expired sign-in: red dot, clear message', 's-auth' in A.get_attribute('#sdot', 'class') and 'sign-in to Alice' in A.inner_text('#syncBox'), A.inner_text('#syncBox'))
+    ok('expired sign-in: Sign in again button', A.query_selector('[data-act=signIn]') is not None)
+    ok('expired sign-in: change kept on phone', 'While signed out' in texts(A))
+    knob(access=False)
+    A.click('[data-act=signIn]'); A.wait_for_selector('#newT'); time.sleep(2)
+    ok('after signing in again it syncs', 'While signed out' in [t['text'] for t in cloud()[1]['thoughts']])
+
     # wrong PIN and the lockout
     knob(clearGuard=True)
     D_ctx, Dp = device('dev-d'); add_thought(Dp, 'D own')
