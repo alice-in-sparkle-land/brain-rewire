@@ -1,0 +1,1806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#C9DFCB">
+<meta name="color-scheme" content="light">
+<title>Kokoro</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C8452C'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23FFF6EC' font-family='serif'%3E%E5%BF%83%3C/text%3E%3C/svg%3E">
+<style>
+:root{--serif:"Noto Serif",Georgia,serif;--sans:system-ui,Roboto,"Segoe UI",sans-serif;--mono:ui-monospace,"Roboto Mono",monospace;
+--bg:#F2F4EC;--card:#FFFDF8;--ink:#1E2733;--mut:#646A71;--faint:#9AA0A6;--line:#E4DED1;--soft:#F3EDE2;--ac:#3B7A4D;--ac2:#C6613A;--danger:#A2403A;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.hidden{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+.hd{position:relative;height:196px;overflow:hidden;color:#1E2733}
+.hd.sub{height:150px}
+.hd img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.hd.dark{color:#fff}
+.hd.dark .hdt,.hd.dark .clock,.hd.dark .hsub{text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.hdin{position:absolute;left:16px;right:16px;top:calc(26px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:12px}
+.stamp{width:42px;height:42px;border-radius:9px;background:#C8452C;color:#FFF6EC;font:600 25px/1 var(--serif);display:grid;place-items:center;transform:rotate(-4deg);flex:none;box-shadow:0 2px 6px rgba(120,30,10,.25)}
+.hdt{font:600 25px/1.15 var(--serif);letter-spacing:.3px}
+.hsub{font-size:13px;opacity:.85}
+.clock{margin-left:auto;font:500 28px/1 var(--mono);letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.backb{width:42px;height:42px;border-radius:50%;background:rgba(255,253,248,.85);color:#1E2733;display:grid;place-items:center;font-size:24px;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.sdot{width:10px;height:10px;border-radius:50%;background:#9AA0A6;box-shadow:0 0 0 2px rgba(255,255,255,.8);flex:none}
+.s-ok{background:#3E9B5B}.s-busy{background:#E09A2D}.s-offline,.s-off{background:#9AA0A6}.s-pin,.s-locked,.s-error,.s-server,.s-setup,.s-foreign,.s-bad,.s-noserver{background:#C9473F}
+.wrap{position:relative;margin:-36px auto 0;padding:0 14px;max-width:560px}
+.banner{background:#7A2E3A;color:#fff;font-size:13.5px;padding:9px 14px;display:flex;gap:10px;align-items:center}
+.banner button{text-decoration:underline;font-weight:600}
+
+/* cards and text */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 20px -16px rgba(40,30,10,.45)}
+.card.flat{padding:4px 16px}
+.lbl{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);font-weight:700}
+.h2{font:600 19px/1.3 var(--serif);margin:0}
+.sm{font-size:13px;color:var(--mut)}
+.mut{color:var(--mut)}
+.row0{display:flex;align-items:center;gap:10px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.link{color:var(--ac);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.sec{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--mut);margin:16px 4px 7px}
+.sec i{width:10px;height:10px;border-radius:50%;flex:none}
+.empty{text-align:center;color:var(--mut);padding:18px 8px;font-size:14px}
+.empty b{display:block;color:var(--ink);font:600 17px var(--serif);margin-bottom:4px}
+
+/* controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--ac);color:#fff;border-radius:12px;padding:12px 16px;font-weight:600;font-size:15px;min-height:46px}
+.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.o{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}
+.btn.d{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+.btn.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn.w{width:100%}
+.btn.sm2{min-height:38px;padding:8px 12px;font-size:14px}
+.btns{display:flex;gap:10px;margin-top:12px}.btns>*{flex:1}
+.in,textarea.in,select.in{width:100%;font:16px/1.45 var(--sans);color:var(--ink);background:#FFFEFB;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;-webkit-appearance:none;appearance:none}
+textarea.in{resize:vertical;min-height:84px}
+select.in{background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+.in:focus{outline:none;border-color:var(--ac)}
+.fld{margin-top:12px}.fld label,.fl{display:block;font-size:13.5px;font-weight:700;margin-bottom:6px}
+.hint{font-size:12.5px;color:var(--mut);margin-top:4px}
+.err{color:var(--danger);font-size:13px;min-height:0;margin-top:4px}
+.err:empty{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:5px 11px;border-radius:999px;background:var(--soft);border:1px solid var(--line);line-height:1.3;max-width:100%}
+.chip.add{background:transparent;border-style:dashed;color:var(--mut)}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.seg{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{flex:1;padding:7px 4px;border-radius:999px;font-size:13px;color:var(--mut);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.typeb{display:flex;gap:8px}
+.typeb button{flex:1;padding:10px 4px;border-radius:12px;border:1.5px solid var(--line);font-size:14px;background:var(--card)}
+.typeb button.on{color:#fff;font-weight:700}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pp{display:inline-block;font-size:12px;padding:1px 9px;border-radius:999px;background:var(--soft);border:1px solid var(--line);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.lvb{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvb button{padding:10px 2px;border-radius:12px;border:1.5px solid var(--line);font-size:12.5px;background:var(--card);font-weight:600}
+.toggle{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:15px}
+.toggle input{width:22px;height:22px;accent-color:var(--ac);flex:none}
+
+/* lists */
+.li{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);width:100%;text-align:left}
+.li:first-child{border-top:0}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 16px var(--serif);flex:none}
+.av.big{width:52px;height:52px;font-size:21px}
+.grow{flex:1;min-width:0}
+.nm{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.one{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dots{display:flex;gap:4px;flex:none}.dots i{width:9px;height:9px;border-radius:50%}
+.tl{padding:11px 0;border-top:1px solid var(--line);width:100%;text-align:left;display:block}
+.tl:first-child{border-top:0}
+.tl .tx{font-size:15px;line-height:1.45;margin-top:5px;overflow-wrap:anywhere}
+
+/* map */
+.mapbox{position:relative;width:100%;aspect-ratio:1;margin:6px 0 0;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.mq{position:absolute;width:50%;height:50%;opacity:.09}
+.ring{position:absolute;border-radius:50%;border:1px solid #DDD5C6;background:rgba(255,255,255,.72)}
+.zl{position:absolute;transform:translate(-50%,-50%);font-size:10.5px;color:var(--mut);text-align:center;line-height:1.2;pointer-events:none;max-width:84px}
+.zl.c{font-size:10px}
+.mcor{display:flex;justify-content:space-between;gap:16px;font-size:12px;font-weight:600;line-height:1.25;margin-top:6px}
+.mcor.top{margin:10px 0 -2px}
+.mcor span{max-width:46%}
+.mdot{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.22);touch-action:none;z-index:3}
+.mdot::after{content:"";position:absolute;inset:-10px}
+.mdot .nmz{position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:11.5px;font-weight:600;white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis;pointer-events:none;color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff}
+.mdot.up .nmz{top:auto;bottom:24px}
+.mdot.drag{transform:scale(1.2);z-index:9;box-shadow:0 6px 14px rgba(0,0,0,.3)}
+.mdot.pulse{box-shadow:0 0 0 6px rgba(200,69,44,.35)}
+.tray{display:flex;flex-wrap:wrap;gap:16px 14px;min-height:46px;padding:10px 6px 22px;align-items:flex-start}
+.tray .mdot{position:relative;margin:0}
+.legend .li{padding:8px 0}
+.legend i{width:11px;height:11px;border-radius:50%;flex:none}
+
+/* person */
+.mix{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:10px 0 6px;background:var(--soft)}
+.mixl{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.mixl b{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.act{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line);width:100%;text-align:left}
+.act:first-of-type,.month+.act{border-top:0}
+.act .ld{width:13px;height:13px;border-radius:50%;margin-top:5px;flex:none}
+.month{font-size:12px;font-weight:700;color:var(--mut);margin:12px 0 2px;text-transform:uppercase;letter-spacing:.5px}
+.saved{font-size:12px;color:var(--ac);margin-left:8px;opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+
+/* becoming */
+.wd{display:inline-block;padding:2px 3px;margin:1px 0;border-radius:7px;font:17px/1.6 var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none}
+.wd.pk{background:#F6DFD6;color:#8E361B;box-shadow:inset 0 -2px 0 #C8613E}
+.note{border:1px solid var(--line);border-left:3px solid var(--ac2);border-radius:0 12px 12px 0;padding:9px 11px;margin-top:9px;background:#FFFEFB}
+.note .ph{font:600 15px/1.4 var(--serif);color:#8E361B;overflow-wrap:anywhere}
+.note textarea.in{min-height:56px;margin-top:6px;font-size:15px}
+.tb{padding:12px 0 14px;border-top:1px solid var(--line)}
+.tb:first-of-type{border-top:0}
+.ban{border:1.5px solid var(--ac)}
+.pick{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)}
+.pick:first-child{border-top:0}
+.pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--ac);flex:none}
+.report{width:100%;min-height:240px;font:12.5px/1.6 var(--mono);white-space:pre-wrap}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));height:calc(68px + env(safe-area-inset-bottom,0px))}
+.tab{display:flex;flex-direction:column;align-items:center;font-size:11.5px;color:var(--mut);gap:2px;width:64px;padding:4px 0}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--ac);font-weight:700}
+.fab{width:58px;height:58px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;margin-top:-30px;box-shadow:0 8px 18px -6px rgba(0,0,0,.4);flex:none}
+.fab svg{width:28px;height:28px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none}
+
+/* sheets */
+.ov{position:fixed;inset:0;z-index:30;background:rgba(20,25,30,.42);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .18s}
+.ov.open{opacity:1}
+.sheet{width:100%;max-width:560px;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;background:var(--card);border-radius:24px 24px 0 0;padding:8px 18px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(30px);transition:transform .22s ease-out}
+.ov.open .sheet{transform:none}
+.grab{width:42px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 8px}
+.shd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 0 6px}
+.x{font-size:15px;color:var(--ac);font-weight:700;padding:8px 2px}
+.big3{display:grid;gap:10px;margin-top:8px}
+.big3 button{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:16px;text-align:left;background:var(--card)}
+.big3 .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font:600 20px var(--serif);color:#fff;flex:none}
+.worlds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.worlds button{border:2px solid var(--line);border-radius:16px;overflow:hidden;text-align:left;background:var(--card)}
+.worlds button.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}
+.worlds img{display:block;width:100%;height:64px;object-fit:cover}
+.worlds b{display:block;padding:7px 10px;font:600 15px var(--serif)}
+.diag{font:12px/1.5 var(--mono);background:var(--soft);border-radius:10px;padding:8px 10px;max-height:160px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);z-index:50;background:#1E2733;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.crash{padding:28px 18px;text-align:center}
+
+body.lite *,body.lite *::before,body.lite *::after{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+</style>
+</head>
+<body>
+<div id="banner" class="banner hidden" role="alert"></div>
+<div id="app"></div>
+<nav class="tabs" id="tabs" aria-label="Main"></nav>
+<input type="file" id="file" accept="application/json,.json,text/plain" hidden>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+(function(){
+/* ===== data.js — constants, sanitizers, storage, backup and old-file import ===== */
+const APP_ID = 'kokoro';
+const APP_VER = '1.0.0';
+const LS_KEY = 'kkr.v1', LS_DEV = 'kkr.dev', LS_SYNC = 'kkr.sync', LS_VIS = 'kkr.vis', LS_DIAG = 'kkr.diag';
+
+/* Map zones: 3 rings (how close) and 4 outer corners (clear boundaries). */
+const ZONES = ['ring1', 'ring2', 'ring3', 'q_tr', 'q_tl', 'q_bl', 'q_br'];
+const ZONE_DEF = {
+  ring1: 'Closest', ring2: 'Close', ring3: 'Known',
+  q_br: 'Negative · set a boundary', q_bl: 'Negative · let go',
+  q_tl: 'Not negative · accept', q_tr: 'Fine, but I keep distance'
+};
+const ZONE_COL = { ring1: '#C9635B', ring2: '#C99A4A', ring3: '#7FA37A', q_tr: '#8A7CA8', q_br: '#B5573F', q_bl: '#8B7F6E', q_tl: '#5E7A96', none: '#A6A196' };
+/* The old map's own (Vietnamese) default names: if the backup still has these, English defaults are used. */
+const ZONE_VI_DEF = {
+  ring1: 'Thân thiết nhất', ring2: 'Thân thiết vừa', ring3: 'Quen biết',
+  q_br: 'Tiêu cực — cần đặt ranh giới', q_bl: 'Tiêu cực — buông bỏ',
+  q_tl: 'Không tiêu cực — chấp nhận', q_tr: 'Ổn, nhưng mình chọn giữ khoảng cách'
+};
+/* Action levels: what someone did, one action at a time. */
+const LEVELS = [0, 1, 2, 3, 4];
+const LEVEL_DEF = ['Toxic', 'Hurtful', 'Neutral', 'Good', 'Inspiring'];
+const LEVEL_COL = ['#7A2E3A', '#C8613E', '#A39E92', '#5E9A5A', '#D9A532'];
+const LEVEL_BG = ['#F3E1E4', '#F8E4DA', '#EFEDE8', '#E3EFE0', '#F8EDD2'];
+const LEVEL_INK = ['#6A2230', '#9A3B1E', '#5F5B52', '#2F6B2C', '#8A6411'];
+/* Thought types (from Stress Test) */
+const TYPES = ['spiral', 'hope', 'fact'];
+const TYPE_NAME = { spiral: 'Spiral', hope: 'Hope', fact: 'Fact' };
+const TYPE_LONG = { spiral: 'Spiral thought', hope: 'Hope', fact: 'Fact' };
+const TYPE_COL = { spiral: '#C8613E', hope: '#1D9E75', fact: '#7F77DD' };
+const TYPE_BG = { spiral: '#F6DFD6', hope: '#DDF0E8', fact: '#E6E4F7' };
+const TYPE_INK = { spiral: '#9A3B1E', hope: '#156A50', fact: '#4A42A0' };
+
+const BRIGHT = ['Loyal', 'Kind', 'Generous', 'Honest', 'Curious', 'Patient', 'Funny', 'Brave', 'Thoughtful', 'Enthusiastic', 'Reliable', 'Gentle'];
+const TENDER = ['Insecure', 'Anxious', 'Stubborn', 'Impatient', 'Guarded', 'Proud', 'Sensitive', 'Restless', 'Self-critical', 'Distracted'];
+
+const LIM = { people: 2000, actions: 20000, thoughts: 20000, sessions: 5000, traits: 40, sessThoughts: 60, notes: 400, linked: 60 };
+
+/* ---------- small helpers ---------- */
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function sStr(v, n) { if (typeof v === 'number') v = String(v); if (typeof v !== 'string') return ''; v = v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, ''); return v.length > n ? v.slice(0, n) : v; }
+function sLine(v, n) { return sStr(v, n * 2).replace(/[\r\n\t]+/g, ' ').trim().slice(0, n); }
+function sNum(v, a, b, d) { v = Number(v); return Number.isFinite(v) ? Math.min(b, Math.max(a, v)) : d; }
+function sTs(v) { if (typeof v === 'string' && v && !/^\d+$/.test(v)) v = Date.parse(v); v = Number(v); return Number.isFinite(v) && v > 0 && v < 4102444800000 ? Math.round(v) : 0; }
+const sBool = v => v === true || v === 1 || v === 'true';
+function sId(v) { if (typeof v === 'number') v = String(v); return typeof v === 'string' && /^[A-Za-z0-9_-]{1,48}$/.test(v) ? v : ''; }
+function sDate(v) { if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return ''; const d = new Date(v + 'T00:00:00'); return isNaN(d) ? '' : v; }
+function keyOf(d) { d = new Date(d); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+const todayKey = () => keyOf(Date.now());
+function sIds(v, max) { const out = [], seen = new Set(); if (Array.isArray(v)) for (const x of v) { const id = sId(x); if (id && !seen.has(id)) { seen.add(id); out.push(id); if (out.length >= max) break; } } return out; }
+function cleanList(v, fn, max) { const out = [], seen = new Set(); if (!Array.isArray(v)) return out; for (const x of v) { let y = null; try { y = fn(x); } catch (e) { y = null; } if (y && !seen.has(y.id)) { seen.add(y.id); out.push(y); if (out.length >= max) break; } } return out; }
+
+/* ---------- item sanitizers ---------- */
+function sPlace(p) {
+  if (!isObj(p)) return null;
+  const x = Number(p.x), y = Number(p.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return { x: Math.round(Math.min(100, Math.max(0, x)) * 10) / 10, y: Math.round(Math.min(100, Math.max(0, y)) * 10) / 10 };
+}
+function sPerson(p) {
+  if (!isObj(p)) return null;
+  const id = sId(p.id); const name = sLine(p.name, 60);
+  if (!id || !name) return null;
+  const refl = isObj(p.refl) ? p.refl : {};
+  return {
+    id, name, rel: sLine(p.rel, 60), note: sStr(p.note, 4000), place: sPlace(p.place),
+    traits: cleanList(p.traits, t => { const tid = sId(t && t.id), tx = sLine(t && t.text, 48); return tid && tx ? { id: tid, text: tx } : null; }, LIM.traits),
+    refl: { feel: sStr(refl.feel, 4000), appreciate: sStr(refl.appreciate, 4000), wish: sStr(refl.wish, 4000) },
+    created: sTs(p.created) || sTs(p.u) || Date.now(), u: sTs(p.u)
+  };
+}
+function sAction(a) {
+  if (!isObj(a)) return null;
+  const id = sId(a.id), pid = sId(a.pid), title = sLine(a.title, 120);
+  if (!id || !pid || !title) return null;
+  const lv = Math.round(sNum(a.level, 0, 4, 2));
+  return { id, pid, title, detail: sStr(a.detail, 4000), date: sDate(a.date) || keyOf(sTs(a.created) || Date.now()), level: lv, created: sTs(a.created) || Date.now(), u: sTs(a.u) };
+}
+function sThought(t) {
+  if (!isObj(t)) return null;
+  const id = sId(t.id), text = sStr(t.text, 2000).trim();
+  if (!id || !text) return null;
+  return { id, text, type: TYPES.includes(t.type) ? t.type : 'spiral', pid: sId(t.pid), date: sTs(t.date) || Date.now(), u: sTs(t.u) };
+}
+function sNote(n) {
+  if (!isObj(n)) return null;
+  const id = sId(n.id), tid = sId(n.tid), phrase = sLine(n.phrase, 300);
+  if (!id || !tid || !phrase) return null;
+  return { id, tid, phrase, comment: sStr(n.comment, 4000) };
+}
+function sSession(s) {
+  if (!isObj(s)) return null;
+  const id = sId(s.id); if (!id) return null;
+  return {
+    id, date: sTs(s.date) || Date.now(), thoughtIds: sIds(s.thoughtIds, LIM.sessThoughts),
+    notes: cleanList(s.notes, sNote, LIM.notes), conclusion: sStr(s.conclusion, 4000),
+    linked: sIds(s.linked, LIM.linked), open: sBool(s.open), u: sTs(s.u)
+  };
+}
+function sLabels(l) {
+  l = isObj(l) ? l : {};
+  const out = { zones: {}, levels: [], u: sTs(l.u) };
+  const z = isObj(l.zones) ? l.zones : {};
+  for (const k of ZONES) { const v = sLine(z[k], 60); out.zones[k] = v || ZONE_DEF[k]; }
+  const lv = Array.isArray(l.levels) ? l.levels : [];
+  for (const i of LEVELS) { const v = sLine(lv[i], 30); out.levels[i] = v || LEVEL_DEF[i]; }
+  return out;
+}
+function sDel(d) {
+  const out = {}, cut = Date.now() - 400 * 864e5;
+  if (isObj(d)) for (const k of Object.keys(d)) { const id = sId(k), t = sTs(d[k]); if (id && t && t > cut) out[id] = t; }
+  return out;
+}
+function sMeta(m) {
+  m = isObj(m) ? m : {};
+  return { lastExport: sTs(m.lastExport), changes: Math.round(sNum(m.changes, 0, 1e7, 0)), welcomed: sBool(m.welcomed) };
+}
+function sanitizeState(o) {
+  o = isObj(o) ? o : {};
+  const st = {
+    v: 1,
+    people: cleanList(o.people, sPerson, LIM.people),
+    actions: cleanList(o.actions, sAction, LIM.actions),
+    thoughts: cleanList(o.thoughts, sThought, LIM.thoughts),
+    sessions: cleanList(o.sessions, sSession, LIM.sessions),
+    labels: sLabels(o.labels), del: sDel(o.del), meta: sMeta(o.meta)
+  };
+  const pids = new Set(st.people.map(p => p.id));
+  st.actions = st.actions.filter(a => pids.has(a.pid));
+  for (const t of st.thoughts) if (t.pid && !pids.has(t.pid)) t.pid = '';
+  /* only one session can be open: keep the most recently changed one */
+  const open = st.sessions.filter(s => s.open).sort((a, b) => (b.u || b.date) - (a.u || a.date));
+  open.slice(1).forEach(s => { s.open = false; });
+  return st;
+}
+const emptyState = () => sanitizeState({});
+
+/* ---------- device-only preferences (never synced, never in backups) ---------- */
+function sDev(o) {
+  o = isObj(o) ? o : {};
+  return {
+    theme: ['earth', 'forest', 'sea', 'wind'].includes(o.theme) ? o.theme : '',
+    random: o.random === undefined ? true : sBool(o.random),
+    lite: sBool(o.lite), autoLite: sBool(o.autoLite), lastTheme: sLine(o.lastTheme, 10), preview: sTs(o.preview) ? sTs(o.preview) : 0
+  };
+}
+
+/* ---------- storage (every call guarded) ---------- */
+let STORAGE_OK = true;
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { STORAGE_OK = false; return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { STORAGE_OK = false; if (typeof storageBanner === 'function') storageBanner(); return false; } }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+function loadState() {
+  const raw = lsGet(LS_KEY);
+  if (!raw) return emptyState();
+  try { return sanitizeState(JSON.parse(raw)); } catch (e) { return emptyState(); }
+}
+
+/* ---------- backup file ---------- */
+function stamp(d) { d = new Date(d); const p = n => String(n).padStart(2, '0'); return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()); }
+function backupJSON(st) {
+  const c = sanitizeState(st);
+  const data = { people: c.people, actions: c.actions, thoughts: c.thoughts, sessions: c.sessions, labels: c.labels, del: c.del };
+  return JSON.stringify({ app: APP_ID, v: 1, exported: new Date().toISOString(), data }, null, 1);
+}
+const backupName = () => 'kokoro-backup-' + stamp(Date.now()) + '.json';
+
+/* ---------- reading any supported file: Kokoro backups and the three old tools ---------- */
+function oldScoreToLevel(score) { const z = Math.min(3, Math.max(0, Math.round((Number(score) || 0) / (100 / 3)))); return [1, 2, 3, 4][z]; }
+function convOldKokoro(d) {
+  const out = { people: [], actions: [] };
+  if (!isObj(d) || !Array.isArray(d.people)) return out;
+  for (const p of d.people) {
+    if (!isObj(p)) continue;
+    const id = sId(p.id); if (!id) continue;
+    const u = sTs(p.updated) || sTs(p.created) || 1;
+    out.people.push({ id, name: p.name, rel: p.relation, traits: p.traits, refl: p.reflections, created: sTs(p.created) || u, u });
+    if (Array.isArray(p.actions)) for (const a of p.actions) {
+      if (!isObj(a)) continue;
+      out.actions.push({ id: sId(a.id), pid: id, title: a.title, detail: a.detail, date: a.date, level: oldScoreToLevel(a.score), created: sTs(a.created) || u, u: sTs(a.created) || u });
+    }
+  }
+  return out;
+}
+function convOldMap(d) {
+  const out = { people: [], zones: null };
+  if (!isObj(d)) return out;
+  const t0 = Date.now();
+  if (Array.isArray(d.items)) for (const it of d.items) {
+    if (!isObj(it)) continue;
+    const name = sLine(it.name, 60), placed = it.xPct != null && it.yPct != null && Number.isFinite(Number(it.xPct));
+    if (!name && !placed && !sStr(it.note, 10)) continue;   // the old map's empty starter dots
+    out.people.push({ id: 'map' + sId(it.id || uid()), name: name || 'Unnamed', note: it.note, place: placed ? { x: it.xPct, y: it.yPct } : null, created: t0, u: 1 });
+  }
+  if (isObj(d.labels)) {
+    const z = {}; let custom = false;
+    for (const k of ZONES) { const v = sLine(d.labels[k], 60); if (v && v !== ZONE_VI_DEF[k]) { z[k] = v; custom = true; } }
+    if (custom) out.zones = z;
+  }
+  return out;
+}
+function convOldStress(d) {
+  const out = { thoughts: [], sessions: [] };
+  if (!isObj(d)) return out;
+  if (Array.isArray(d.thoughts)) for (const t of d.thoughts) if (isObj(t)) {
+    const dt = sTs(t.date) || 1;
+    out.thoughts.push({ id: t.id, text: t.text, type: t.type, date: dt, u: dt });
+  }
+  if (Array.isArray(d.sessions)) for (const s of d.sessions) if (isObj(s)) {
+    const dt = sTs(s.date) || 1;
+    out.sessions.push({
+      id: s.id, date: dt, thoughtIds: s.thoughtIds, conclusion: s.conclusion, linked: s.linkedThoughtIds,
+      notes: Array.isArray(s.annotations) ? s.annotations.map(a => isObj(a) ? { id: a.id, tid: a.thoughtId, phrase: a.phrase, comment: a.comment } : null) : [],
+      open: s.id === d.currentSessionId, u: dt
+    });
+  }
+  return out;
+}
+/* Turns any supported file into {state, summary}. Throws {msg} for files it can't use. */
+function parseImport(text) {
+  let o;
+  try { o = JSON.parse(text); } catch (e) { throw { msg: 'That file isn’t valid JSON, so it can’t be imported.' }; }
+  if (!isObj(o)) throw { msg: 'That file isn’t a Kokoro backup.' };
+  let parts = { people: [], actions: [], thoughts: [], sessions: [] }, zones = null, labels = null, kind = '';
+  const notes = [];
+  if (o.app === APP_ID && isObj(o.data)) { kind = 'backup'; const c = sanitizeState(o.data); parts = c; labels = c.labels; }
+  else if (o.app === 'kokoro-legacy' || o.app === APP_ID && Array.isArray(o.people) || Array.isArray(o.items) || (Array.isArray(o.thoughts) && Array.isArray(o.sessions))) {
+    kind = 'old';
+    const ko = o.app === 'kokoro-legacy' ? o.kokoro : (Array.isArray(o.people) ? o : null);
+    const mp = o.app === 'kokoro-legacy' ? o.map : (Array.isArray(o.items) ? o : null);
+    const stz = o.app === 'kokoro-legacy' ? o.stress : (Array.isArray(o.thoughts) ? o : null);
+    const k = convOldKokoro(ko), m = convOldMap(mp), s = convOldStress(stz);
+    /* a map dot with the same name as a Kokoro person becomes that person's place on the map */
+    const byName = new Map(k.people.map(p => [String(p.name || '').trim().toLowerCase(), p]));
+    let joined = 0;
+    for (const mpp of m.people) {
+      const twin = byName.get(String(mpp.name).trim().toLowerCase());
+      if (twin && mpp.name !== 'Unnamed') {
+        if (!twin.place && mpp.place) twin.place = mpp.place;
+        const n = sStr(mpp.note, 4000); if (n) twin.note = (twin.note ? twin.note + '\n' : '') + n;
+        joined++;
+      } else k.people.push(mpp);
+    }
+    if (joined) notes.push(joined + ' map ' + (joined === 1 ? 'dot was' : 'dots were') + ' matched to Kokoro people by name');
+    parts = sanitizeState({ people: k.people, actions: k.actions, thoughts: s.thoughts, sessions: s.sessions });
+    zones = m.zones;
+    if (ko) notes.push('Kokoro: ' + (ko.people || []).length + ' people');
+    if (mp) notes.push('Boundary map: ' + m.people.length + ' dots');
+    if (stz) notes.push('Stress test: ' + s.thoughts.length + ' thoughts, ' + s.sessions.length + ' sessions');
+    if (!ko && !mp && !stz) throw { msg: 'No data was found in that file.' };
+  } else if (o.app && o.app !== APP_ID) throw { msg: 'That backup belongs to another tool (' + sLine(o.app, 30) + ').' };
+  else throw { msg: 'That file isn’t a Kokoro backup.' };
+  const st = { people: parts.people, actions: parts.actions, thoughts: parts.thoughts, sessions: parts.sessions, labels, zones, del: kind === 'backup' ? parts.del : {} };
+  const summary = { kind, people: st.people.length, actions: st.actions.length, thoughts: st.thoughts.length, sessions: st.sessions.length, notes };
+  return { st, summary };
+}
+
+/* ===== scene.js — the misty-hills header, drawn once per theme and time of day ===== */
+const THEMES = {
+  earth: { sky: ['#EBC9A0', '#F7E9D4'], r: ['#E2B88E', '#CF946A', '#B0704C', '#7E4A33'], sun: '#C8452C', ac: '#B0532A', ac2: '#C99230', bg: '#F7F0E6', name: 'Earth' },
+  forest: { sky: ['#C9DFCB', '#EFF4E7'], r: ['#AECBA8', '#84AC82', '#5C8C61', '#3B6948'], sun: '#FFFDF4', ac: '#3B7A4D', ac2: '#C6613A', bg: '#F2F4EC', name: 'Forest' },
+  sea: { sky: ['#B8DCE8', '#EDF6F4'], r: ['#A3CEDC', '#74B2C8', '#4690B0', '#256A8C'], sun: '#FFFFFF', ac: '#1D7898', ac2: '#E0784E', bg: '#EEF4F4', name: 'Sea' },
+  wind: { sky: ['#CFDBF0', '#F4F2F8'], r: ['#C3CEE6', '#A6B4D7', '#8894C2', '#6772A6'], sun: '#FFFFFF', ac: '#4569B3', ac2: '#D9A32E', bg: '#F1F2F7', name: 'Wind' }
+};
+const PHASES = {
+  dawn: { sky: ['#EDB9AC', '#FAE3CF'], tint: '#F2B3A0', k: 0.22 },
+  dusk: { sky: ['#D98A7E', '#F4C9A6'], tint: '#6A3E62', k: 0.42 },
+  night: { sky: ['#16203D', '#34406A'], tint: '#111933', k: 0.66 }
+};
+function phaseOf(d) { const h = d.getHours(); if (h >= 5 && h < 8) return 'dawn'; if (h >= 8 && h < 16) return 'day'; if (h >= 16 && h < 19) return 'dusk'; return 'night'; }
+function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function ridge(yBase, amp, seed, freq, W = 800, H = 440) {
+  const r = rng(seed), p = [r() * 6, r() * 6];
+  let d = `M0 ${H} L`;
+  for (let x = 0; x <= W; x += 5) {
+    const y = yBase - amp * (0.7 * Math.sin(x * freq + p[0]) + 0.3 * Math.sin(x * freq * 2.1 + p[1]));
+    d += `${x} ${y.toFixed(1)} L`;
+  }
+  return d + `${W} ${H}Z`;
+}
+function mixHex(a, b, k) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const ch = s => [(s >> 16) & 255, (s >> 8) & 255, s & 255];
+  const A = ch(pa), B = ch(pb);
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, '0')).join('');
+}
+const RIDGES = [[246, 26, .0085], [286, 22, .011], [326, 18, .014], [366, 14, .018]];
+let SCENE_KEY = '', SCENE_URL = '';
+function sceneURL(theme, phase, preview) {
+  const key = theme + '|' + phase;
+  if (!preview && key === SCENE_KEY) return SCENE_URL;
+  const t = THEMES[theme], P = PHASES[phase];
+  const sky = P ? P.sky : t.sky;
+  const rc = t.r.map(c => P ? mixHex(c, P.tint, P.k) : c);
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" preserveAspectRatio="xMidYMax slice">` +
+    `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>` +
+    `<linearGradient id="m" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="${phase === 'night' ? .12 : .35}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>` +
+    `<rect width="800" height="440" fill="url(#g)"/>`;
+  if (phase === 'night') {
+    const r = rng(7);
+    for (let i = 0; i < 46; i++) s += `<circle cx="${(r() * 800).toFixed(0)}" cy="${(110 + r() * 150).toFixed(0)}" r="${(0.6 + r() * 1.3).toFixed(1)}" fill="#fff" opacity="${(0.35 + r() * 0.55).toFixed(2)}"/>`;
+    s += `<circle cx="430" cy="205" r="26" fill="#F4F1E4"/><circle cx="441" cy="198" r="24" fill="${sky[0]}"/>`;
+  } else {
+    const sun = phase === 'dusk' || phase === 'dawn' ? (theme === 'earth' ? t.sun : '#FFF4E4') : t.sun;
+    s += `<circle cx="430" cy="205" r="30" fill="${sun}"/>`;
+    s += `<path d="M486 258 q7 -5 14 0 q7 -5 14 0" stroke="#3B4654" stroke-width="2" fill="none" opacity=".45"/><path d="M520 244 q5 -4 10 0 q5 -4 10 0" stroke="#3B4654" stroke-width="2" fill="none" opacity=".4"/>`;
+  }
+  RIDGES.forEach((q, i) => {
+    s += `<path d="${ridge(q[0], q[1], 11 + i * 7, q[2])}" fill="${rc[i]}"/>`;
+    if (i < 3) s += `<rect x="0" y="${q[0] + 4}" width="800" height="44" fill="url(#m)"/>`;
+  });
+  s += '</svg>';
+  const url = 'data:image/svg+xml,' + encodeURIComponent(s);
+  if (!preview) { SCENE_KEY = key; SCENE_URL = url; }
+  return url;
+}
+
+/* ===== sync.js — change stamps, merging and cloud sync (from the synced-tool blueprint) =====
+   Every item carries u (last change time). Deleted ids go into S.del with the delete time.
+   Theme, Lite mode, preview and backup counters stay on each device and are never sent. */
+const SYNC_COLS = ['people', 'actions', 'thoughts', 'sessions'];
+
+function canon(v) {
+  if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+  if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
+  return JSON.stringify(v === undefined ? null : v);
+}
+function hashStr(s) {
+  let h = 0x811c9dc5, h2 = 0;
+  for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h ^= c; h = Math.imul(h, 0x01000193); h2 = (h2 * 31 + c) | 0; }
+  return (h >>> 0).toString(36) + '.' + (h2 >>> 0).toString(36) + '.' + s.length.toString(36);
+}
+function itemKey(x) { const c = {}; for (const k in x) if (k !== 'u') c[k] = x[k]; return canon(c); }
+const labKey = l => canon({ zones: l.zones, levels: l.levels });
+
+/* ---------- change stamps ---------- */
+let SNAP = null;
+function takeSnap() {
+  const cols = {};
+  for (const col of SYNC_COLS) { const m = new Map(); for (const x of S[col]) m.set(x.id, { k: itemKey(x), u: x.u || 0 }); cols[col] = m; }
+  SNAP = { cols, lab: labKey(S.labels) };
+}
+/* Compares S with the last snapshot: changed items get u = now, removed ones become delete markers.
+   Returns the number of changed things (0 = nothing that syncs changed). */
+function stampChanges() {
+  if (!SNAP) { takeSnap(); return 0; }
+  const now = Date.now(); let ch = 0;
+  if (!isObj(S.del)) S.del = {};
+  const cols = {};
+  for (const col of SYNC_COLS) {
+    const old = SNAP.cols[col], m = new Map();
+    for (const x of S[col]) {
+      const o = old.get(x.id), k = itemKey(x);
+      if (o && o.k === k) x.u = o.u; else { x.u = now; ch++; if (S.del[x.id]) delete S.del[x.id]; }
+      m.set(x.id, { k, u: x.u });
+    }
+    for (const id of old.keys()) if (!m.has(id)) { S.del[id] = now; ch++; }
+    cols[col] = m;
+  }
+  const lk = labKey(S.labels);
+  if (lk !== SNAP.lab) { S.labels.u = now; ch++; }
+  SNAP = { cols, lab: lk };
+  return ch;
+}
+/* Marks everything as changed now (Import · Replace), so the backup wins on every device. */
+function touchAll(oldIds) {
+  const now = Date.now();
+  for (const col of SYNC_COLS) {
+    const have = new Set(S[col].map(x => x.id));
+    for (const id of (oldIds[col] || [])) if (!have.has(id)) S.del[id] = now;
+    for (const x of S[col]) { x.u = now; delete S.del[x.id]; }
+  }
+  S.labels.u = now;
+  takeSnap();
+}
+const idsOf = st => Object.fromEntries(SYNC_COLS.map(c => [c, st[c].map(x => x.id)]));
+
+/* ---------- cloud payload ---------- */
+function syncData(st) {
+  const c = sanitizeState({ people: st.people, actions: st.actions, thoughts: st.thoughts, sessions: st.sessions, labels: st.labels, del: st.del });
+  return { app: APP_ID, v: 1, people: c.people, actions: c.actions, thoughts: c.thoughts, sessions: c.sessions, labels: c.labels, del: c.del };
+}
+const payloadStr = () => JSON.stringify(syncData(S));
+function parseRemote(str) {
+  let o; try { o = JSON.parse(str); } catch (e) { throw { kind: 'bad', msg: 'Cloud data could not be read.' }; }
+  if (!isObj(o) || o.app !== APP_ID) throw { kind: 'foreign' };
+  const c = sanitizeState(o);
+  return { people: c.people, actions: c.actions, thoughts: c.thoughts, sessions: c.sessions, labels: c.labels, del: c.del };
+}
+
+/* ---------- merge (same answer whichever device runs it) ---------- */
+function newer(a, b) {
+  if (!a) return b; if (!b) return a;
+  if ((a.u || 0) !== (b.u || 0)) return (a.u || 0) > (b.u || 0) ? a : b;
+  return canon(a) >= canon(b) ? a : b;
+}
+function mergeIn(R) {
+  const del = { ...R.del };
+  for (const [k, t] of Object.entries(S.del || {})) if (!(k in del) || t > del[k]) del[k] = t;
+  for (const col of SYNC_COLS) {
+    const L = new Map(S[col].map(x => [x.id, x])), used = new Set(), out = [];
+    for (const r of R[col]) { used.add(r.id); out.push(newer(L.get(r.id), r)); }
+    for (const l of S[col]) if (!used.has(l.id)) out.push(l);
+    S[col] = out.filter(x => !(x.id in del) || (x.u || 0) > del[x.id]);
+  }
+  S.del = sDel(del);
+  const w = newer({ zones: S.labels.zones, levels: S.labels.levels, u: S.labels.u || 0 }, R.labels);
+  if (w === R.labels) S.labels = sLabels(R.labels);
+  fixAfterMerge();
+  takeSnap();
+}
+/* keeps links valid and only one session open after a merge */
+function fixAfterMerge() {
+  const c = sanitizeState(S); S.people = c.people; S.actions = c.actions; S.thoughts = c.thoughts; S.sessions = c.sessions;
+}
+function replaceWithRemote(R) {
+  for (const col of SYNC_COLS) S[col] = R[col].map(x => ({ ...x }));
+  S.del = { ...R.del }; S.labels = sLabels(R.labels);
+  S.meta.welcomed = true;
+  fixAfterMerge();
+  takeSnap();
+}
+const hasOwnData = () => SYNC_COLS.some(k => S[k].length > 0);
+
+/* ---------- sync settings on this device ---------- */
+const SC = { on: false, pin: '', server: '', slot: 'kokoro', rev: 0, hash: '', last: 0 };
+function loadSC() {
+  try {
+    const o = JSON.parse(lsGet(LS_SYNC) || 'null'); if (!isObj(o)) return;
+    SC.on = sBool(o.on); SC.pin = /^\d{4,8}$/.test(o.pin) ? o.pin : '';
+    SC.server = /^https?:\/\/[^\s"'<>]+$/.test(o.server || '') ? sStr(o.server, 200) : '';
+    SC.slot = /^[a-z0-9-]{1,40}$/.test(o.slot) ? o.slot : 'kokoro';
+    SC.rev = Math.round(sNum(o.rev, 0, 1e12, 0)); SC.hash = sStr(o.hash, 60); SC.last = sTs(o.last);
+    if (!SC.pin) SC.on = false;
+  } catch (e) { /* ignore */ }
+}
+function saveSC() { lsSet(LS_SYNC, JSON.stringify(SC)); }
+const pageServer = () => /^https?:$/.test(location.protocol) ? location.origin : '';
+const apiBase = () => (SC.server || pageServer()).replace(/\/+$/, '');
+
+/* ---------- sync engine ---------- */
+const SY = { st: 'off', msg: '', busy: false, again: false, timer: 0, until: 0, gen: 1, clean: 0 };
+function markDirty() { SY.gen++; }
+
+async function api(method, path, body, pin, server) {
+  const base = (server || apiBase()).replace(/\/+$/, '');
+  if (!base) throw { kind: 'noserver' };
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const tm = setTimeout(() => { if (ctl) ctl.abort(); }, 20000);
+  const headers = { 'X-Pin': pin == null ? SC.pin : pin };
+  if (body) headers['Content-Type'] = 'application/json';
+  let r;
+  try { r = await fetch(base + '/api' + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', signal: ctl ? ctl.signal : undefined }); }
+  catch (e) { throw { kind: 'net', msg: e && e.message }; }
+  finally { clearTimeout(tm); }
+  let j = null; try { j = await r.json(); } catch (e) { /* not json */ }
+  if (r.status === 401) throw { kind: 'pin', left: j && j.triesLeft };
+  if (r.status === 429) throw { kind: 'locked', wait: (j && j.retryIn) || 900 };
+  if (r.status === 409 && j) return { conflict: true, ...j };
+  if (!r.ok || !j) throw { kind: j && j.error === 'setup' ? 'setup' : 'server', msg: (j && (j.detail || j.error)) || ('HTTP ' + r.status) };
+  return j;
+}
+function syncErrText(e) {
+  if (!e || typeof e !== 'object') return 'Sync failed.';
+  return {
+    net: 'Can’t reach the sync site. Changes are kept on this phone.',
+    pin: 'The PIN was not accepted.' + (e.left > 0 ? ` ${e.left} tr${e.left === 1 ? 'y' : 'ies'} left before a 15-minute pause.` : ''),
+    locked: `Too many wrong PINs. Sync is paused for ${Math.ceil((e.wait || 900) / 60)} min.`,
+    setup: 'The sync site isn’t set up yet: ' + (e.msg || ''),
+    noserver: 'Add the address of your sync site first.',
+    foreign: 'That cloud space holds data from another tool.',
+    bad: e.msg || 'Cloud data could not be read.',
+    server: 'The sync site had a problem (' + (e.msg || 'unknown') + '). It will try again.'
+  }[e.kind] || 'Sync failed.';
+}
+function setSync(st, msg = '') {
+  SY.st = st; SY.msg = msg;
+  const d = document.getElementById('sdot');
+  if (d) { d.className = 'sdot s-' + st + (SC.on ? '' : ' hidden'); d.title = syncLine(); }
+  const b = document.getElementById('syncBox'), a = document.activeElement; if (b && !(b.contains(a) && a.tagName === 'INPUT')) b.innerHTML = syncInner();
+}
+function ago(t) {
+  if (!t) return 'never';
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 50) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' min ago';
+  if (s < 86400) return Math.round(s / 3600) + ' h ago';
+  return fmtDay(t);
+}
+function syncLine() {
+  if (!SC.on) return 'Sync is off';
+  if (SY.st === 'busy') return 'Syncing…';
+  if (SY.st === 'ok') return 'Synced · ' + ago(SC.last);
+  if (SY.st === 'offline') return 'Offline · changes wait on this phone';
+  return SY.msg || 'Not synced yet';
+}
+function schedSync(ms = 1500) { if (!SC.on) return; clearTimeout(SY.timer); SY.timer = setTimeout(() => syncNow(false), ms); }
+
+function applyRemote(g) {
+  if (g.data == null) { SC.rev = 0; SC.hash = ''; saveSC(); markDirty(); return; }
+  const R = parseRemote(g.data);
+  mergeIn(R);
+  SC.rev = g.rev; SC.hash = hashStr(g.data); saveSC();
+  markDirty();
+  persist();
+  afterRemote();
+}
+let renderWaiting = false;
+function afterRemote() {
+  if (isTyping()) { renderWaiting = true; return; }
+  softRender();
+}
+async function syncNow(manual) {
+  if (!SC.on) return setSync('off');
+  if (SY.busy) { SY.again = true; return; }
+  if (!manual && SY.st === 'pin') return;
+  if (!manual && SY.st === 'locked' && Date.now() < SY.until) return;
+  if (navigator.onLine === false) return setSync('offline');
+  SY.busy = true; setSync('busy');
+  try {
+    const g = await api('GET', '/slot/' + SC.slot + '?since=' + SC.rev);
+    if (!g.same) applyRemote(g);
+    for (let i = 0; i < 5 && SY.gen !== SY.clean; i++) {
+      const gen = SY.gen, str = payloadStr(), h = hashStr(str);
+      if (h === SC.hash) { SY.clean = gen; break; }
+      const r = await api('PUT', '/slot/' + SC.slot, { base: SC.rev, data: str });
+      if (r.conflict) { applyRemote(r); continue; }
+      SC.rev = r.rev; SC.hash = h; SY.clean = gen; saveSC();
+    }
+    SC.last = Date.now(); saveSC();
+    setSync('ok');
+  } catch (e) {
+    if (e && e.kind === 'locked') SY.until = Date.now() + (e.wait || 900) * 1000;
+    if (e && e.kind !== 'net') logDiag('sync: ' + (e.kind || '') + ' ' + (e.msg || e.message || ''));
+    setSync(e && e.kind === 'net' ? 'offline' : (e && e.kind) || 'error', syncErrText(e));
+  } finally {
+    SY.busy = false;
+    if (SY.again) { SY.again = false; schedSync(300); }
+  }
+}
+/* When the page is hidden, try one last quick save (small data only). */
+function flushOnHide() {
+  if (!SC.on || SY.busy || SY.gen === SY.clean || SY.st === 'pin' || SY.st === 'locked') return;
+  try {
+    const str = payloadStr(); if (hashStr(str) === SC.hash) return;
+    const body = JSON.stringify({ base: SC.rev, data: str });
+    if (body.length > 60000 || !apiBase()) return;
+    fetch(apiBase() + '/api/slot/' + SC.slot, { method: 'PUT', keepalive: true, headers: { 'X-Pin': SC.pin, 'Content-Type': 'application/json' }, body }).catch(() => {});
+  } catch (e) { /* ignore */ }
+}
+
+/* ---------- connect / disconnect ---------- */
+let pendingCloud = null;
+async function connectSync(pin, server) {
+  await api('GET', '/ping', null, pin, server);
+  const g = await api('GET', '/slot/' + SC.slot, null, pin, server);
+  const R = g.data == null ? null : parseRemote(g.data);
+  SC.pin = pin; SC.server = server; SC.on = true; SC.rev = 0; SC.hash = ''; SY.clean = 0; markDirty();
+  if (!R) { saveSC(); return 'empty'; }
+  if (!hasOwnData()) { replaceWithRemote(R); SC.rev = g.rev; SC.hash = hashStr(g.data); SY.clean = SY.gen; saveSC(); persist(); return 'took'; }
+  pendingCloud = { R, g }; SC.on = false; // stays off until the person chooses
+  return 'ask';
+}
+function finishConnect(choice) {
+  const p = pendingCloud; pendingCloud = null; if (!p) return;
+  if (choice === 'cloud') replaceWithRemote(p.R); else mergeIn(p.R);
+  SC.on = true; SC.rev = p.g.rev; SC.hash = hashStr(p.g.data); markDirty(); saveSC();
+  persist();
+}
+function disconnectSync() {
+  Object.assign(SC, { on: false, pin: '', rev: 0, hash: '', last: 0 }); saveSC();
+  clearTimeout(SY.timer); setSync('off');
+}
+
+/* ---------- settings panel ---------- */
+function syncInner() {
+  const host = pageServer() ? location.host : '';
+  if (!SC.on) {
+    return `<div class="lbl">Cloud sync</div>
+      <p class="sm" style="margin:6px 0 0">Keep this phone and your other devices in step through your own sync site. The site needs to be set up once (see the setup guide).</p>
+      <div class="fld"><label for="spin">Sync PIN</label><input class="in" id="spin" name="spin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="4 to 8 digits"></div>
+      ${host ? `<div class="hint">Sync site: ${esc(host)} · <button type="button" class="link" data-act="syncSrvShow">use another</button></div>` : ''}
+      <div class="fld${host && !SC.server ? ' hidden' : ''}" id="srvFld"><label for="ssrv">Sync site address</label><input class="in" id="ssrv" name="ssrv" inputmode="url" autocomplete="off" value="${esc(SC.server)}" placeholder="https://brain-rewire.your-name.workers.dev"></div>
+      <div class="err" id="syncErr"></div>
+      <div class="btns"><button class="btn" data-act="syncConnect">Connect</button></div>`;
+  }
+  const bad = SY.st === 'pin';
+  return `<div class="lbl">Cloud sync</div>
+    <div class="row0" style="margin-top:8px"><span class="sdot s-${SY.st}" style="position:static"></span><div style="font-size:14px;flex:1">${esc(syncLine())}</div></div>
+    ${SY.st !== 'ok' && SY.st !== 'busy' && SY.msg && SY.msg !== syncLine() ? `<p class="sm" style="margin:6px 0 0">${esc(SY.msg)}</p>` : ''}
+    <p class="sm" style="margin:6px 0 0">Site: ${esc((apiBase() || '').replace(/^https?:\/\//, ''))} · last synced ${esc(ago(SC.last))}</p>
+    ${bad ? `<div class="row0" style="margin-top:8px"><input class="in" id="spin2" name="spin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="PIN" style="flex:1"><button class="btn" data-act="syncPin">Try PIN</button></div>` : ''}
+    <div class="btns"><button class="btn" data-act="syncNowBtn">Sync now</button><button class="btn g" data-act="syncOff">Disconnect</button></div>`;
+}
+
+/* ===== app.js — state, saving, navigation layers, sheets, header, stability ===== */
+let S = loadState();
+let D = sDev((() => { try { return JSON.parse(lsGet(LS_DEV) || 'null'); } catch (e) { return null; } })());
+let TAB = 'becoming';
+let THEME = 'forest';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const trunc = (s, n) => s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s;
+function fmtDay(t) { const d = new Date(t); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: d.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }); }
+function fmtWhen(t) {
+  const d = new Date(t), now = new Date();
+  const hm = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  if (keyOf(d) === keyOf(now)) return 'Today ' + hm;
+  if (keyOf(d) === keyOf(Date.now() - 864e5)) return 'Yesterday ' + hm;
+  if (now - d < 6 * 864e5) return d.toLocaleDateString('en-GB', { weekday: 'short' }) + ' ' + hm;
+  return fmtDay(t) + ' · ' + hm;
+}
+function fmtDateKey(k) { const d = new Date(k + 'T00:00:00'); return isNaN(d) ? k : fmtDay(d); }
+const plural = (n, a, b) => n + ' ' + (n === 1 ? a : (b || a + 's'));
+const getP = id => S.people.find(p => p.id === id);
+const getT = id => S.thoughts.find(t => t.id === id);
+const getS = id => S.sessions.find(s => s.id === id);
+const openSession = () => S.sessions.find(s => s.open) || null;
+const zoneName = k => k === 'none' ? 'Not on the map' : S.labels.zones[k] || ZONE_DEF[k];
+const levelName = i => S.labels.levels[i] || LEVEL_DEF[i];
+function zoneOf(place) {
+  if (!place) return 'none';
+  const dx = place.x - 50, dy = place.y - 50, dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist <= 13.6) return 'ring1'; if (dist <= 26.8) return 'ring2'; if (dist <= 40) return 'ring3';
+  if (dx >= 0 && dy < 0) return 'q_tr'; if (dx >= 0) return 'q_br'; if (dy >= 0) return 'q_bl'; return 'q_tl';
+}
+const initial = name => esc((Array.from(String(name).trim())[0] || '?').toUpperCase());
+const actsOf = pid => S.actions.filter(a => a.pid === pid).sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created);
+
+/* ---------- saving ---------- */
+function persist() { return lsSet(LS_KEY, JSON.stringify(S)); }
+function saveDev() { lsSet(LS_DEV, JSON.stringify(D)); }
+function commit() {
+  const n = stampChanges();
+  if (n) { S.meta.changes += n; markDirty(); schedSync(); }
+  persist();
+}
+
+/* ---------- diagnostics ---------- */
+let DIAG = (() => { try { const a = JSON.parse(lsGet(LS_DIAG) || '[]'); return Array.isArray(a) ? a.slice(-40).map(x => sStr(x, 300)) : []; } catch (e) { return []; } })();
+function logDiag(msg) {
+  DIAG.push(new Date().toISOString().slice(0, 19).replace('T', ' ') + ' ' + sStr(String(msg), 280));
+  DIAG = DIAG.slice(-40); lsSet(LS_DIAG, JSON.stringify(DIAG));
+}
+window.addEventListener('error', e => logDiag('error: ' + (e.message || '') + ' @' + (e.lineno || '')));
+window.addEventListener('unhandledrejection', e => logDiag('promise: ' + (e.reason && (e.reason.message || e.reason.msg || e.reason.kind) || '')));
+
+/* ---------- toast ---------- */
+let toastT = 0;
+function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms); }
+function storageBanner() {
+  const b = $('#banner'); if (!b || !b.classList.contains('hidden')) return;
+  b.innerHTML = '<span style="flex:1">Saving is blocked on this phone, so changes may be lost. Export a backup.</span><button data-act="exportNow">Export</button>';
+  b.classList.remove('hidden');
+}
+
+/* ---------- typing guard ---------- */
+function isTyping() { const a = document.activeElement; return !!a && (a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'file'].includes(a.type)) || a.tagName === 'SELECT'); }
+
+/* ---------- navigation layers (pages and sheets) with the Back-gesture guard ----------
+   Every page or sheet pushes one history entry, so Android's Back closes it.
+   On the main screen, the first Back shows a hint; a second Back within 2.5 s leaves. */
+const LAY = [];
+let HIST = true, expectPop = 0, queued = [], lastBack = 0;
+function initHistory() {
+  try { history.replaceState({ kk: 'root' }, ''); history.pushState({ kk: 'guard' }, ''); }
+  catch (e) { HIST = false; logDiag('history blocked'); }
+}
+function pushLayer(entry) {
+  if (expectPop > 0) { queued.push(entry); return; }
+  LAY.push(entry);
+  if (HIST) { try { history.pushState({ kk: 'L', n: LAY.length }, ''); } catch (e) { HIST = false; } }
+  applyLayers();
+}
+function popLayerUI() {
+  if (!LAY.length) return;
+  LAY.pop();
+  applyLayers();
+  if (HIST) {
+    let ours = false; try { ours = !!(history.state && history.state.kk === 'L'); } catch (e) { ours = false; }
+    if (ours) { expectPop++; history.back(); }
+  }
+}
+window.addEventListener('popstate', () => {
+  if (expectPop > 0) {
+    expectPop--;
+    if (!expectPop && queued.length) { const q = queued; queued = []; q.forEach(pushLayer); }
+    return;
+  }
+  if (LAY.length) { LAY.pop(); applyLayers(); return; }
+  const now = Date.now();
+  if (now - lastBack < 2500) { try { history.back(); } catch (e) { /* ignore */ } return; }
+  lastBack = now;
+  toast('Swipe back again to leave');
+  try { history.pushState({ kk: 'guard' }, ''); } catch (e) { HIST = false; }
+});
+const topView = () => { for (let i = LAY.length - 1; i >= 0; i--) if (LAY[i].kind === 'view') return LAY[i]; return null; };
+const topSheet = () => { const t = LAY[LAY.length - 1]; return t && t.kind === 'sheet' ? t : null; };
+let shownViewKey = '';
+function applyLayers() {
+  const v = topView(), key = v ? v.type + ':' + v.id : 'tab:' + TAB;
+  if (key !== shownViewKey) { shownViewKey = key; render(); window.scrollTo(0, v && v.scroll ? v.scroll : 0); }
+  const sh = topSheet();
+  const ov = $('#ov');
+  if (!sh) { if (ov) ov.remove(); return; }
+  drawSheet(sh);
+}
+function openView(type, id) {
+  const cur = topView(); if (cur) cur.scroll = window.scrollY; else TABSCROLL[TAB] = window.scrollY;
+  /* opening a page from inside a sheet: close the sheet first */
+  if (topSheet()) popLayerUI();
+  pushLayer({ kind: 'view', type, id });
+}
+const TABSCROLL = {};
+function popAllUI() {
+  const n = LAY.length; if (!n) return;
+  LAY.length = 0; applyLayers();
+  if (HIST) {
+    let ours = false; try { ours = !!(history.state && history.state.kk === 'L'); } catch (e) { ours = false; }
+    if (ours) { expectPop++; history.go(-n); }
+  }
+}
+function goTab(t) {
+  popAllUI();
+  if (TAB !== t) { TABSCROLL[TAB] = window.scrollY; TAB = t; }
+  shownViewKey = ''; render(); window.scrollTo(0, 0);
+}
+
+/* ---------- sheets ---------- */
+function openSheet(build, opts = {}) {
+  const top = topSheet();
+  if (top) { top.build = build; top.opts = opts; drawSheet(top, true); return; }
+  pushLayer({ kind: 'sheet', build, opts });
+}
+function closeSheet() { if (topSheet()) popLayerUI(); }
+function drawSheet(sh, fresh) {
+  let ov = $('#ov');
+  if (ov && ov._sh === sh && !fresh) return;
+  if (!ov) {
+    ov = document.createElement('div'); ov.id = 'ov'; ov.className = 'ov';
+    ov.innerHTML = '<div class="sheet" role="dialog" aria-modal="true"></div>';
+    ov.addEventListener('click', e => { if (e.target === ov) closeSheet(); });
+    document.body.appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('open'));
+  }
+  ov._sh = sh;
+  const box = $('.sheet', ov);
+  try { box.innerHTML = '<div class="grab"></div>' + sh.build(); box.scrollTop = 0; if (sh.opts.after) sh.opts.after(box); }
+  catch (e) { logDiag('sheet: ' + e.message); box.innerHTML = '<div class="grab"></div><p>Something went wrong here. Your data is safe.</p><button class="btn w" data-act="closeSheet">Close</button>'; }
+  if (sh.opts.focus) setTimeout(() => { const f = $(sh.opts.focus, box); if (f) f.focus(); }, 280);
+}
+function refreshSheet() { const sh = topSheet(); if (sh && sh.opts.live && !isTyping()) drawSheet(sh, true); }
+const sheetHead = (title, close = 'Close') => `<div class="shd"><h2 class="h2">${title}</h2><button class="x" data-act="closeSheet">${close}</button></div>`;
+
+/* two taps for anything destructive */
+function armed(btn, label) {
+  if (btn.dataset.armed === '1') return true;
+  const orig = btn.textContent; btn.dataset.armed = '1'; btn.textContent = label || 'Tap again to confirm'; btn.classList.add('armed');
+  setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = orig; btn.classList.remove('armed'); } }, 3000);
+  return false;
+}
+
+/* ---------- theme ---------- */
+function pickTheme() {
+  const keys = Object.keys(THEMES);
+  if (!D.random && D.theme) return D.theme;
+  const pool = keys.filter(k => k !== D.lastTheme);
+  const t = pool[Math.floor(Math.random() * pool.length)];
+  D.lastTheme = t; saveDev();
+  return t;
+}
+function applyTheme(t) {
+  THEME = THEMES[t] ? t : 'forest';
+  const T = THEMES[THEME], r = document.documentElement.style;
+  r.setProperty('--ac', T.ac); r.setProperty('--ac2', T.ac2); r.setProperty('--bg', T.bg);
+  const m = $('meta[name=theme-color]'); if (m) m.content = T.sky[0];
+}
+
+/* ---------- header ---------- */
+let PHASE = '';
+function headerHTML(v) {
+  const now = new Date(); PHASE = phaseOf(now);
+  const dark = PHASE === 'dusk' || PHASE === 'night';
+  const hm = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const date = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  let left;
+  if (v) {
+    const title = v.type === 'person' ? (getP(v.id) || {}).name || '' : 'Session';
+    left = `<button class="backb" data-act="back" aria-label="Back">‹</button><div class="grow"><div class="hdt one">${esc(title)}</div><div class="hsub">${esc(date)}</div></div>`;
+  } else {
+    left = `<div class="stamp" aria-hidden="true">心</div><div class="grow"><div class="hdt">Kokoro</div><div class="hsub">${esc(date)}</div></div>`;
+  }
+  return `<div class="hd${v ? ' sub' : ''}${dark ? ' dark' : ''}" id="hd"><img alt="" src="${sceneURL(THEME, PHASE)}"><div class="hdin">${left}<div class="clock"><span class="sdot s-${SY.st}${SC.on ? '' : ' hidden'}" id="sdot" title="${esc(syncLine())}" data-act="syncDot"></span><span id="clk">${hm}</span></div></div></div>`;
+}
+function tickClock() {
+  const now = new Date();
+  if (phaseOf(now) !== PHASE) { const h = $('#hd'); if (h) { const tmp = document.createElement('div'); tmp.innerHTML = headerHTML(topView()); h.replaceWith(tmp.firstChild); } return; }
+  const c = $('#clk'); if (c) c.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+/* ---------- tabs ---------- */
+const ICONS = {
+  map: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>',
+  people: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c3 0 5 2 5 5"/></svg>',
+  becoming: '<svg viewBox="0 0 24 24"><path d="M12 21v-8"/><path d="M12 13c0-4 3-7 7-7 0 4-3 7-7 7z"/><path d="M12 15c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/></svg>',
+  settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>'
+};
+function tabsHTML() {
+  const t = (k, n) => `<button class="tab${TAB === k && !topView() ? ' on' : ''}" data-act="tab" data-v="${k}">${ICONS[k]}<span>${n}</span></button>`;
+  return t('becoming', 'Becoming') + t('map', 'Map') + `<button class="fab" data-act="fab" aria-label="Add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>` + t('people', 'People') + t('settings', 'Settings');
+}
+
+/* ---------- render ---------- */
+function render() {
+  try {
+    const v = topView();
+    let body;
+    if (v && v.type === 'person') { const p = getP(v.id); body = p ? personView(p) : goneView('That person was removed.'); }
+    else if (v && v.type === 'session') { const s = getS(v.id); body = s ? sessionView(s) : goneView('That session was removed.'); }
+    else body = { becoming: becomingView, map: mapView, people: peopleView, settings: settingsView }[TAB]();
+    $('#app').innerHTML = headerHTML(v) + '<div class="wrap" id="main">' + body + '</div>';
+    $('#tabs').innerHTML = tabsHTML();
+    afterRender(v);
+  } catch (e) {
+    logDiag('render: ' + (e && e.message) + ' ' + (e && e.stack ? e.stack.split('\n')[1] : ''));
+    $('#app').innerHTML = `<div class="crash"><div class="stamp" style="margin:0 auto 14px">心</div><p><b>Something went wrong on this screen.</b></p><p class="sm">Your data is safe. Export a backup, then try another tab.</p><div class="btns"><button class="btn" data-act="exportNow">Export backup</button><button class="btn g" data-act="tab" data-v="becoming">Go to Becoming</button></div></div>`;
+  }
+}
+function goneView(msg) { return `<div class="card"><div class="empty"><b>Not found</b>${esc(msg)}</div><button class="btn w g" data-act="back">Go back</button></div>`; }
+function softRender() {
+  if (isTyping()) { renderWaiting = true; return; }
+  renderWaiting = false;
+  const y = window.scrollY; render(); window.scrollTo(0, y); refreshSheet();
+}
+function afterRender(v) {
+  if (v && v.type === 'session') bindSession(getS(v.id));
+  if (!v && TAB === 'map') bindMap();
+}
+document.addEventListener('focusout', () => setTimeout(() => { if (renderWaiting && !isTyping()) softRender(); }, 60));
+
+/* ---------- Lite mode: turns itself on after an unexpected close ---------- */
+function checkCrash() {
+  try {
+    const v = JSON.parse(lsGet(LS_VIS) || 'null');
+    if (isObj(v) && v.vis === 1 && Date.now() - (v.t || 0) < 10 * 60e3 && !D.lite) {
+      D.lite = true; D.autoLite = true; saveDev();
+      logDiag('last session closed unexpectedly: Lite mode on');
+      setTimeout(() => toast('Kokoro closed unexpectedly last time, so Lite mode is on. Change it in Settings.', 4200), 600);
+    }
+  } catch (e) { /* ignore */ }
+}
+function markVisible(vis) { lsSet(LS_VIS, JSON.stringify({ vis: vis ? 1 : 0, t: Date.now() })); }
+function applyLite() { document.body.classList.toggle('lite', !!D.lite); }
+
+/* ---------- start ---------- */
+function start() {
+  checkCrash(); applyLite();
+  applyTheme(pickTheme());
+  loadSC(); takeSnap();
+  if (!STORAGE_OK) storageBanner();
+  initHistory();
+  render();
+  markVisible(true);
+  setInterval(() => { if (!document.hidden) { tickClock(); markVisible(true); } }, 15000);
+  setInterval(() => { if (!document.hidden && SC.on) syncNow(false); }, 30000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { flushTyping(); markVisible(false); flushOnHide(); }
+    else { markVisible(true); tickClock(); if (SC.on) syncNow(false); }
+  });
+  window.addEventListener('pagehide', () => { flushTyping(); markVisible(false); flushOnHide(); });
+  window.addEventListener('online', () => { if (SC.on) syncNow(false); });
+  if (SC.on) { setSync('busy'); syncNow(false); }
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(e => logDiag('sw: ' + e.message));
+}
+/* text boxes save as you type (debounced); this writes any pending text right away */
+const PENDING = new Map();
+function typeSave(key, fn, ms = 500) { clearTimeout((PENDING.get(key) || {}).t); PENDING.set(key, { fn, t: setTimeout(() => { PENDING.delete(key); fn(); }, ms) }); }
+function flushTyping() { for (const [k, v] of PENDING) { clearTimeout(v.t); PENDING.delete(k); try { v.fn(); } catch (e) { logDiag('flush: ' + e.message); } } }
+
+/* ===== views.js — Becoming, sessions, Map, People, person pages, Settings ===== */
+
+/* ---------- shared bits ---------- */
+const typeTag = t => `<span class="tag" style="background:${TYPE_BG[t]};color:${TYPE_INK[t]}">${TYPE_NAME[t]}</span>`;
+const personChip = pid => { const p = pid && getP(pid); return p ? `<span class="pp">${esc(p.name)}</span>` : ''; };
+const levelDot = (lv, sz = 9) => `<i style="width:${sz}px;height:${sz}px;border-radius:50%;display:inline-block;background:${LEVEL_COL[lv]}"></i>`;
+function typeButtons(cur, act) {
+  return `<div class="typeb">${TYPES.map(t => `<button type="button" data-act="${act}" data-v="${t}" class="${cur === t ? 'on' : ''}" style="${cur === t ? `background:${TYPE_COL[t]};border-color:${TYPE_COL[t]}` : ''}" aria-pressed="${cur === t}">${TYPE_LONG[t]}</button>`).join('')}</div>`;
+}
+function setTypeButtons(box, cur) {
+  $$('.typeb button', box).forEach(b => { const on = b.dataset.v === cur; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.style.background = on ? TYPE_COL[b.dataset.v] : ''; b.style.borderColor = on ? TYPE_COL[b.dataset.v] : ''; });
+}
+function personSelect(id, cur, attrs = '') {
+  const ps = [...S.people].sort((a, b) => a.name.localeCompare(b.name));
+  return `<select class="in" id="${id}" ${attrs}><option value="">No one in particular</option>${ps.map(p => `<option value="${esc(p.id)}"${p.id === cur ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select>`;
+}
+function copyText(text) {
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) { ok = false; } ta.remove(); return ok; };
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(() => true, () => fallback());
+  return Promise.resolve(fallback());
+}
+function download(name, text, type) {
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return true;
+  } catch (e) { logDiag('download: ' + e.message); return false; }
+}
+
+/* =====================================================================
+   BECOMING — write thoughts, tag them, stress test them in sessions
+   ===================================================================== */
+let DRAFT = (() => { try { const o = JSON.parse(lsGet('kkr.draft') || 'null'); return { text: sStr(o && o.text, 2000), type: TYPES.includes(o && o.type) ? o.type : '', pid: sId(o && o.pid) }; } catch (e) { return { text: '', type: '', pid: '' }; } })();
+const saveDraft = () => lsSet('kkr.draft', JSON.stringify(DRAFT));
+let JUST_SAVED = '', LIBF = 'all', LIBN = 40, SESN = 10;
+
+function becomingView() {
+  const os = openSession();
+  const lib = [...S.thoughts].filter(t => LIBF === 'all' || t.type === LIBF).sort((a, b) => b.date - a.date);
+  const all = S.thoughts.length;
+  if (DRAFT.pid && !getP(DRAFT.pid)) DRAFT.pid = '';
+  let h = `<div class="card">
+    <label class="lbl" for="newT">Write a thought</label>
+    <textarea class="in" id="newT" data-in="draftText" rows="3" maxlength="2000" placeholder="My capacity is not enough for more serious things." style="margin-top:8px">${esc(DRAFT.text)}</textarea>
+    <div style="margin-top:10px" id="draftTypes">${typeButtons(DRAFT.type, 'draftType')}</div>
+    <div class="fld"><label for="draftP">About someone? (optional)</label>${personSelect('draftP', DRAFT.pid, 'data-in="draftP"')}</div>
+    <div class="err" id="newErr"></div>
+    <button class="btn w" style="margin-top:12px" data-act="saveThought">Save thought</button>
+    ${JUST_SAVED && getT(JUST_SAVED) ? `<p class="sm" style="margin:10px 0 0">Saved. <button class="link" data-act="stressIt" data-id="${esc(JUST_SAVED)}">Stress test it now →</button></p>` : ''}
+  </div>`;
+  if (os) {
+    h += `<div class="card ban"><div class="lbl" style="color:var(--ac)">Open session · since ${esc(fmtWhen(os.date))}</div>
+      <p class="sm" style="margin:4px 0 0">${plural(os.thoughtIds.length, 'thought')} · ${plural(os.notes.length, 'note')}</p>
+      <button class="btn w" style="margin-top:10px" data-act="openSession" data-id="${esc(os.id)}">Continue session</button></div>`;
+  }
+  h += `<div class="card"><div class="between"><span class="lbl">Thought library · ${all}</span><button class="link" data-act="newSession">+ New session</button></div>`;
+  if (all) {
+    h += `<div class="seg" style="margin:10px 0 2px">${['all', ...TYPES].map(f => `<button data-act="libF" data-v="${f}" class="${LIBF === f ? 'on' : ''}">${f === 'all' ? 'All' : TYPE_NAME[f]}</button>`).join('')}</div>`;
+    h += lib.length ? lib.slice(0, LIBN).map(t => `<button class="tl" data-act="thought" data-id="${esc(t.id)}"><div class="between"><span>${typeTag(t.type)} ${personChip(t.pid)}</span><span class="sm">${esc(fmtWhen(t.date))}</span></div><div class="tx">${esc(trunc(t.text, 220))}</div></button>`).join('')
+      : `<div class="empty">No ${TYPE_NAME[LIBF] || ''} thoughts yet.</div>`;
+    if (lib.length > LIBN) h += `<button class="btn g w sm2" style="margin:6px 0 4px" data-act="libMore">Show more (${lib.length - LIBN})</button>`;
+  } else h += `<div class="empty"><b>Your library is empty</b>Write a thought above and tag it. It lands here, newest first.</div>`;
+  h += `</div>`;
+  const ss = [...S.sessions].sort((a, b) => b.date - a.date);
+  h += `<div class="card"><div class="lbl">Past sessions · ${ss.length}</div>`;
+  h += ss.length ? ss.slice(0, SESN).map(s => {
+    const first = s.thoughtIds.map(getT).find(Boolean);
+    const snip = s.conclusion || (first ? first.text : '');
+    return `<button class="tl" data-act="openSession" data-id="${esc(s.id)}"><div class="between"><span class="sm">${esc(fmtWhen(s.date))}${s.open ? ' · <b style="color:var(--ac)">open</b>' : ''}</span><span class="sm">${plural(s.thoughtIds.length, 'thought')} · ${plural(s.notes.length, 'note')}</span></div>${snip ? `<div class="tx">${esc(trunc(snip, 120))}</div>` : ''}</button>`;
+  }).join('') : `<div class="empty">No sessions yet. Pick thoughts with “+ New session” to pull them apart word by word.</div>`;
+  if (ss.length > SESN) h += `<button class="btn g w sm2" style="margin:6px 0 4px" data-act="sesMore">Show more (${ss.length - SESN})</button>`;
+  h += `</div>`;
+  const stale = !S.meta.lastExport || Date.now() - S.meta.lastExport > 7 * 864e5;
+  if (S.meta.changes > 0 && stale && !SC.on) h += `<p class="sm" style="text-align:center;margin:4px 0 12px">${plural(S.meta.changes, 'change')} since your last backup · <button class="link" data-act="exportNow">Export</button></p>`;
+  return h;
+}
+function saveThought() {
+  const text = sStr(DRAFT.text, 2000).trim(), err = $('#newErr');
+  if (!text) { err.textContent = 'Write the thought first.'; $('#newT').focus(); return; }
+  if (!DRAFT.type) { err.textContent = 'Pick what kind of thought this is: Spiral, Hope or Fact.'; return; }
+  const t = { id: uid(), text, type: DRAFT.type, pid: getP(DRAFT.pid) ? DRAFT.pid : '', date: Date.now(), u: 0 };
+  S.thoughts.push(t); commit();
+  JUST_SAVED = t.id; DRAFT = { text: '', type: '', pid: '' }; saveDraft();
+  render(); toast('Thought saved');
+}
+function stressIt(tid) {
+  if (!getT(tid)) return;
+  let s = openSession();
+  if (s) { if (!s.thoughtIds.includes(tid)) s.thoughtIds.push(tid); }
+  else { s = { id: uid(), date: Date.now(), thoughtIds: [tid], notes: [], conclusion: '', linked: [], open: true, u: 0 }; S.sessions.push(s); }
+  commit(); JUST_SAVED = '';
+  openView('session', s.id);
+}
+
+/* thought sheet: edit, re-tag, link to a person, stress test, delete */
+let TEDIT = null;
+function thoughtSheet(tid) {
+  const t = getT(tid); if (!t) return;
+  TEDIT = { id: t.id, type: t.type };
+  const inS = S.sessions.filter(s => s.thoughtIds.includes(t.id) || s.linked.includes(t.id)).sort((a, b) => b.date - a.date);
+  openSheet(() => `${sheetHead('Thought')}
+    <p class="sm" style="margin:0 0 6px">Saved ${esc(fmtWhen(t.date))}</p>
+    <textarea class="in" id="teText" rows="4" maxlength="2000">${esc(t.text)}</textarea>
+    <div style="margin-top:10px" id="teTypes">${typeButtons(TEDIT.type, 'teType')}</div>
+    <div class="fld"><label for="teP">About someone?</label>${personSelect('teP', t.pid)}</div>
+    <div class="err" id="teErr"></div>
+    <div class="btns"><button class="btn o" data-act="stressItS" data-id="${esc(t.id)}">Stress test it</button><button class="btn" data-act="teSave">Save</button></div>
+    ${inS.length ? `<div class="lbl" style="margin-top:16px">In ${plural(inS.length, 'session')}</div>${inS.map(s => `<button class="tl" data-act="openSession" data-id="${esc(s.id)}"><span class="sm">${esc(fmtWhen(s.date))}${s.open ? ' · open' : ''} · ${plural(s.notes.filter(n => n.tid === t.id).length, 'note')}</span></button>`).join('')}` : ''}
+    <button class="btn d w" style="margin-top:16px" data-act="teDel">Delete thought</button>`, { focus: null });
+}
+function deleteThought(id) {
+  S.thoughts = S.thoughts.filter(t => t.id !== id);
+  for (const s of S.sessions) { s.thoughtIds = s.thoughtIds.filter(x => x !== id); s.linked = s.linked.filter(x => x !== id); s.notes = s.notes.filter(n => n.tid !== id); }
+  if (JUST_SAVED === id) JUST_SAVED = '';
+  commit();
+}
+
+/* picker: start a new session or add thoughts to one */
+let PICK = null;
+function pickSheet(mode, sid) {
+  const s = sid ? getS(sid) : null;
+  const have = new Set(s ? s.thoughtIds : []);
+  const list = [...S.thoughts].sort((a, b) => b.date - a.date).filter(t => !have.has(t.id));
+  PICK = { mode, sid, f: 'all' };
+  const os = openSession();
+  openSheet(() => `${sheetHead(mode === 'add' ? 'Add thoughts' : 'New session')}
+    <p class="sm" style="margin:0 0 8px">${mode === 'add' ? 'Tick the thoughts to add to this session.' : 'Tick one or more thoughts to work through together.' + (os ? ' Starting a new session closes the one that’s open.' : '')}</p>
+    ${list.length ? `<div class="seg" style="margin-bottom:6px">${['all', ...TYPES].map(f => `<button data-act="pickF" data-v="${f}" class="${f === 'all' ? 'on' : ''}">${f === 'all' ? 'All' : TYPE_NAME[f]}</button>`).join('')}</div>
+    <div id="pickList">${list.map(t => `<label class="pick" data-type="${t.type}"><input type="checkbox" value="${esc(t.id)}"><span class="grow">${typeTag(t.type)} ${personChip(t.pid)}<span style="display:block;margin-top:4px;overflow-wrap:anywhere">${esc(trunc(t.text, 200))}</span></span></label>`).join('')}</div>
+    <div class="err" id="pickErr"></div>
+    <button class="btn w" style="margin-top:12px" data-act="pickGo">${mode === 'add' ? 'Add to session' : 'Start session'}</button>`
+      : `<div class="empty"><b>No thoughts to pick</b>${mode === 'add' ? 'Every thought is already in this session.' : 'Write a thought on the Becoming tab first.'}</div>`}`);
+}
+function pickGo() {
+  const ids = $$('#pickList input:checked').map(i => i.value).filter(getT);
+  if (!ids.length) { $('#pickErr').textContent = 'Tick at least one thought.'; return; }
+  if (PICK.mode === 'add') {
+    const s = getS(PICK.sid); if (!s) return closeSheet();
+    ids.forEach(id => { if (!s.thoughtIds.includes(id)) s.thoughtIds.push(id); });
+    commit(); closeSheet(); softRender(); toast(plural(ids.length, 'thought') + ' added');
+  } else {
+    S.sessions.forEach(x => { x.open = false; });
+    const s = { id: uid(), date: Date.now(), thoughtIds: ids.slice(0, LIM.sessThoughts), notes: [], conclusion: '', linked: [], open: true, u: 0 };
+    S.sessions.push(s); commit();
+    openView('session', s.id);
+  }
+}
+
+/* ---------- session page ---------- */
+const PICKS = {};          // tapped words per thought, while on the session page
+let LINKTYPE = '';
+const words = text => text.match(/\S+/g) || [];
+function sessionView(s) {
+  let h = `<div class="card"><div class="between"><span class="lbl">Session · ${esc(fmtWhen(s.date))}</span>${s.open ? '<span class="tag" style="background:var(--ac);color:#fff">open</span>' : '<span class="sm">closed</span>'}</div>`;
+  const ts = s.thoughtIds.map(getT).filter(Boolean);
+  if (!ts.length) h += `<div class="empty">This session has no thoughts yet.</div>`;
+  ts.forEach(t => {
+    const pk = PICKS[t.id] || new Set();
+    h += `<div class="tb"><div class="between"><span>${typeTag(t.type)} ${personChip(t.pid)}</span><button class="sm link" style="color:var(--mut)" data-act="unlinkT" data-t="${esc(t.id)}">Remove</button></div>
+      <div style="margin:6px 0 4px" aria-label="Tap words to pick them">${words(t.text).map((w, i) => `<span class="wd${pk.has(i) ? ' pk' : ''}" role="button" tabindex="0" data-act="word" data-t="${esc(t.id)}" data-i="${i}">${esc(w)}</span>`).join(' ')}</div>
+      <button class="btn o sm2" data-act="extract" data-t="${esc(t.id)}">Extract selected words</button>
+      <div class="err" id="xerr-${esc(t.id)}"></div>
+      ${s.notes.filter(n => n.tid === t.id).map(n => `<div class="note"><div class="between"><span class="ph">“${esc(n.phrase)}”</span><button class="sm link" style="color:var(--mut)" data-act="delNote" data-n="${esc(n.id)}">Remove</button></div>
+        <textarea class="in" rows="2" maxlength="4000" data-in="note" data-n="${esc(n.id)}" placeholder="What’s really true about this part?">${esc(n.comment)}</textarea></div>`).join('')}
+    </div>`;
+  });
+  h += `<button class="btn g w" style="margin-top:6px" data-act="addToSession">+ Add another thought</button></div>`;
+  h += `<div class="card"><label class="lbl" for="concl">Conclusion (optional)</label>
+    <textarea class="in" id="concl" rows="3" maxlength="4000" data-in="concl" placeholder="What did this session actually show you?" style="margin-top:8px">${esc(s.conclusion)}</textarea></div>`;
+  const linked = s.linked.map(getT).filter(Boolean);
+  h += `<div class="card"><div class="lbl">Link a new thought (optional)</div>
+    ${linked.map(t => `<button class="tl" data-act="thought" data-id="${esc(t.id)}">${typeTag(t.type)} ${personChip(t.pid)}<div class="tx">${esc(t.text)}</div></button>`).join('')}
+    <textarea class="in" id="linkT" rows="2" maxlength="2000" placeholder="My value depends on how big my measurable impact is." style="margin-top:10px"></textarea>
+    <div style="margin-top:10px" id="linkTypes">${typeButtons(LINKTYPE, 'linkType')}</div>
+    <div class="err" id="linkErr"></div>
+    <button class="btn g w" style="margin-top:10px" data-act="linkNew">+ Save and link this thought</button></div>`;
+  h += `<div class="btns"><button class="btn g" data-act="toggleOpen">${s.open ? 'Close session' : 'Reopen session'}</button><button class="btn" data-act="report">Report for Claude</button></div>
+    <button class="btn d w" style="margin:12px 0 8px" data-act="delSession">Delete session</button>`;
+  return h;
+}
+function bindSession() { /* all handled by delegation */ }
+function curSession() { const v = topView(); return v && v.type === 'session' ? getS(v.id) : null; }
+function extract(tid) {
+  const s = curSession(), t = getT(tid); if (!s || !t) return;
+  const pk = [...(PICKS[tid] || [])].sort((a, b) => a - b);
+  if (!pk.length) { const e = $('#xerr-' + CSS.escape(tid)); if (e) e.textContent = 'Tap a word, or a few, in the sentence first.'; return; }
+  const ws = words(t.text); let phrase = '';
+  pk.forEach((i, k) => { if (k && i !== pk[k - 1] + 1) phrase += ' …'; phrase += (phrase ? ' ' : '') + (ws[i] || ''); });
+  s.notes.push({ id: uid(), tid, phrase: sLine(phrase, 300), comment: '' });
+  delete PICKS[tid]; commit(); softRender();
+  setTimeout(() => { const ns = $$(`textarea[data-in="note"]`); const last = s.notes[s.notes.length - 1]; const ta = ns.find(x => x.dataset.n === last.id); if (ta) ta.focus(); }, 50);
+}
+function buildReport(s) {
+  let md = `# Stress test session\n\n${fmtWhen(s.date)}\n\n`;
+  s.thoughtIds.map(getT).filter(Boolean).forEach(t => {
+    const p = t.pid && getP(t.pid);
+    md += `## Thought (${TYPE_LONG[t.type]}${p ? ', about ' + p.name : ''})\n"${t.text}"\n\n`;
+    const ns = s.notes.filter(n => n.tid === t.id);
+    if (ns.length) { md += `**Stress-tested parts:**\n`; ns.forEach(n => { md += `- "${n.phrase}" — ${n.comment.trim() || '(no comment yet)'}\n`; }); md += `\n`; }
+  });
+  if (s.conclusion.trim()) md += `## Conclusion\n${s.conclusion.trim()}\n\n`;
+  const ln = s.linked.map(getT).filter(Boolean);
+  if (ln.length) { md += `## Linked new thoughts\n`; ln.forEach(t => { md += `- (${TYPE_LONG[t.type]}) ${t.text}\n`; }); }
+  return md;
+}
+function reportSheet(s) {
+  const md = buildReport(s);
+  const canShare = !!(navigator.share);
+  openSheet(() => `${sheetHead('Report for Claude')}
+    <p class="sm" style="margin:0 0 8px">Copy it and paste it to Claude for another perspective, or save it as a file.</p>
+    <textarea class="in report" id="repBox" readonly>${esc(md)}</textarea>
+    <div class="btns"><button class="btn" data-act="repCopy">Copy</button><button class="btn g" data-act="repDl">Download .md</button></div>
+    ${canShare ? '<button class="btn g w" style="margin-top:10px" data-act="repShare">Share</button>' : ''}`);
+}
+
+/* =====================================================================
+   MAP — drag people between the rings and the four outer corners
+   ===================================================================== */
+let PULSE = '';
+function dotHTML(p, inTray) {
+  const z = zoneOf(p.place);
+  const pos = inTray ? '' : `left:${p.place.x}%;top:${p.place.y}%;`;
+  const up = !inTray && p.place.y > 86 ? ' up' : '';
+  return `<div class="mdot${PULSE === p.id ? ' pulse' : ''}${up}" data-id="${esc(p.id)}" role="button" tabindex="0" aria-label="${esc(p.name)}, ${esc(zoneName(z))}" style="${pos}background:${ZONE_COL[z]}"><span class="nmz">${esc(p.name)}</span></div>`;
+}
+function mapView() {
+  const placed = S.people.filter(p => p.place), tray = S.people.filter(p => !p.place);
+  const Z = S.labels.zones;
+  const zl = (k, x, y, c) => `<span class="zl${c ? ' c' : ''}" style="left:${x}%;top:${y}%">${esc(Z[k])}</span>`;
+  let h = `<div class="card"><div class="between"><span class="lbl">Your map</span><button class="link" data-act="addPerson">+ Add</button></div>`;
+  if (!S.people.length) h += `<p class="sm" style="margin:6px 0 0">Each dot is a person, or a thing, in your life. Add someone, then drag them into a ring to keep them close, or out to a corner if they stay outside your circle.</p>`;
+  if (tray.length) h += `<div class="sm" style="margin-top:8px">Not on the map yet · drag onto the circle, or tap to open</div><div class="tray" id="tray">${tray.map(p => dotHTML(p, true)).join('')}</div>`;
+  h += `<div class="mcor top"><span style="color:${ZONE_COL.q_tl}">${esc(Z.q_tl)}</span><span style="color:${ZONE_COL.q_tr};text-align:right">${esc(Z.q_tr)}</span></div>
+  <div class="mapbox" id="mapbox">
+    <div class="mq" style="left:0;top:0;background:${ZONE_COL.q_tl}"></div><div class="mq" style="right:0;top:0;background:${ZONE_COL.q_tr}"></div>
+    <div class="mq" style="left:0;bottom:0;background:${ZONE_COL.q_bl}"></div><div class="mq" style="right:0;bottom:0;background:${ZONE_COL.q_br}"></div>
+    <div class="ring" style="inset:10%"></div><div class="ring" style="inset:23.2%"></div><div class="ring" style="inset:36.4%;background:rgba(255,255,255,.9)"></div>
+    ${zl('ring3', 50, 13.5, 1)}${zl('ring2', 50, 26.8, 1)}${zl('ring1', 50, 40, 1)}
+    ${placed.map(p => dotHTML(p, false)).join('')}
+  </div>
+  <div class="mcor"><span style="color:${ZONE_COL.q_bl}">${esc(Z.q_bl)}</span><span style="color:${ZONE_COL.q_br};text-align:right">${esc(Z.q_br)}</span></div>`;
+  h += `<p class="sm" style="text-align:center;margin:8px 0 2px">Drag a dot to move someone · tap to open their page</p></div>`;
+  const counts = {}; for (const p of S.people) { const z = zoneOf(p.place); counts[z] = (counts[z] || 0) + 1; }
+  h += `<div class="card legend"><div class="lbl">Zones</div>
+    ${['ring1', 'ring2', 'ring3'].map(k => `<div class="li"><i style="background:${ZONE_COL[k]}"></i><span class="grow">${esc(Z[k])}</span><span class="sm">${counts[k] || 0}</span></div>`).join('')}
+    <div class="lbl" style="margin-top:12px">Outside your circle</div>
+    ${['q_br', 'q_bl', 'q_tl', 'q_tr'].map(k => `<div class="li"><i style="background:${ZONE_COL[k]}"></i><span class="grow">${esc(Z[k])}</span><span class="sm">${counts[k] || 0}</span></div>`).join('')}
+    <p class="sm" style="margin:8px 0 2px">Rename the zones in Settings.</p></div>`;
+  if (S.people.length && !tray.length && placed.length) h += `<p class="sm" style="text-align:center;font-family:var(--serif);font-style:italic;font-size:15px;margin:4px 0 10px">Your boundaries are a little clearer now.</p>`;
+  return h;
+}
+function bindMap() {
+  const box = $('#mapbox'); if (!box) return;
+  if (PULSE) setTimeout(() => { PULSE = ''; const d = $('.mdot.pulse'); if (d) d.classList.remove('pulse'); }, 2200);
+  $$('.mdot').forEach(el => attachDrag(el, box));
+}
+function attachDrag(el, box) {
+  let down = false, drag = false, sx = 0, sy = 0, fromTray = false, pos = null, pid = el.dataset.id;
+  el.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    e.preventDefault();
+    down = true; drag = false; sx = e.clientX; sy = e.clientY;
+    fromTray = !!el.closest('#tray');
+    pos = null;
+    try { el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  });
+  el.addEventListener('pointermove', e => {
+    if (!down) return;
+    if (!drag && Math.hypot(e.clientX - sx, e.clientY - sy) > 6) {
+      drag = true; el.classList.add('drag');
+      if (fromTray) {
+        /* lift the dot out of the tray and onto the map at the finger's position */
+        try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        box.appendChild(el); el.style.margin = '';
+        try { el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      }
+    }
+    if (!drag) return;
+    const r = box.getBoundingClientRect();
+    const x = clamp((e.clientX - r.left) / r.width * 100, -8, 108), y = clamp((e.clientY - r.top) / r.height * 100, -30, 108);
+    pos = { x, y };
+    el.style.left = x + '%'; el.style.top = y + '%';
+    el.style.background = ZONE_COL[zoneOf({ x: clamp(x, 0, 100), y: clamp(y, 0, 100) })];
+  });
+  const end = e => {
+    if (!down) return; down = false;
+    try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    const p = getP(pid); if (!p) return softRender();
+    if (!drag) { openView('person', pid); return; }
+    el.classList.remove('drag');
+    const tray = $('#tray');
+    const tr = tray && tray.getBoundingClientRect();
+    if (e.type !== 'pointercancel' && tr && e.clientX >= tr.left - 8 && e.clientX <= tr.right + 8 && e.clientY >= tr.top - 8 && e.clientY <= tr.bottom + 8) p.place = null;
+    else if (e.type === 'pointercancel' || !pos) { /* keep where it was */ }
+    else if (pos.y < -4 && !p.place) { /* dropped above the map while coming from the tray: leave it there */ }
+    else p.place = { x: Math.round(clamp(pos.x, 0, 100) * 10) / 10, y: Math.round(clamp(pos.y, 0, 100) * 10) / 10 };
+    commit(); softRender();
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openView('person', pid); } });
+}
+
+/* =====================================================================
+   PEOPLE — grouped by where they sit on the map
+   ===================================================================== */
+let PQ = '', PF = -1;
+const ZORDER = ['ring1', 'ring2', 'ring3', 'q_tr', 'q_tl', 'q_bl', 'q_br', 'none'];
+function recentLevels(pid, days = 90) { const cut = keyOf(Date.now() - days * 864e5); return actsOf(pid).filter(a => a.date >= cut); }
+function peopleList() {
+  const q = PQ.trim().toLowerCase();
+  let ps = S.people.filter(p => !q || p.name.toLowerCase().includes(q) || p.rel.toLowerCase().includes(q) || p.traits.some(t => t.text.toLowerCase().includes(q)));
+  if (PF >= 0) ps = ps.filter(p => recentLevels(p.id).some(a => a.level === PF));
+  if (!ps.length) return `<div class="card"><div class="empty">${S.people.length ? 'No one matches.' : ''}</div></div>`;
+  let h = '';
+  for (const z of ZORDER) {
+    const g = ps.filter(p => zoneOf(p.place) === z).sort((a, b) => a.name.localeCompare(b.name));
+    if (!g.length) continue;
+    h += `<div class="sec"><i style="background:${ZONE_COL[z]}"></i>${esc(zoneName(z))} · ${g.length}</div><div class="card flat">`;
+    h += g.map(p => {
+      const acts = actsOf(p.id).slice(0, 8).reverse();
+      const sub = p.rel || p.traits.slice(0, 3).map(t => t.text).join(' · ');
+      return `<button class="li" data-act="person" data-id="${esc(p.id)}"><span class="av" style="background:${ZONE_COL[z]}">${initial(p.name)}</span><span class="grow"><span class="nm" style="display:block">${esc(p.name)}</span>${sub ? `<span class="sm one" style="display:block">${esc(sub)}</span>` : ''}</span><span class="dots">${acts.map(a => `<i style="background:${LEVEL_COL[a.level]}" title="${esc(levelName(a.level))}"></i>`).join('')}</span></button>`;
+    }).join('');
+    h += `</div>`;
+  }
+  return h;
+}
+function peopleView() {
+  if (!S.people.length) return `<div class="card"><div class="empty"><b>Add the people in your life</b>Each person gets a place on your map, traits that describe who they are, and a log of what they did, kept apart.</div><button class="btn w" data-act="addPerson">Add a person</button></div>`;
+  return `<div class="card"><div class="row0"><input class="in" id="pq" type="search" data-in="pq" placeholder="Search names, traits…" value="${esc(PQ)}" autocomplete="off"><button class="btn sm2" data-act="addPerson" aria-label="Add a person" style="flex:none">+ Add</button></div>
+    <div class="sm" style="margin:10px 0 6px">Did something in the last 90 days:</div>
+    <div class="chips" id="pfChips"><button class="chip${PF < 0 ? ' on' : ''}" data-act="pf" data-v="-1">Anyone</button>${LEVELS.map(i => `<button class="chip${PF === i ? ' on' : ''}" data-act="pf" data-v="${i}">${levelDot(i)} ${esc(levelName(i))}</button>`).join('')}</div></div>
+    <div id="plist">${peopleList()}</div>`;
+}
+
+/* ---------- person page ---------- */
+function personView(p) {
+  const z = zoneOf(p.place), acts = actsOf(p.id), recent = recentLevels(p.id);
+  const cnt = LEVELS.map(i => recent.filter(a => a.level === i).length);
+  let h = `<div class="card"><div class="row0"><span class="av big" style="background:${ZONE_COL[z]}">${initial(p.name)}</span><div class="grow"><div class="h2" style="overflow-wrap:anywhere">${esc(p.name)}</div>${p.rel ? `<div class="sm">${esc(p.rel)}</div>` : ''}<div class="sm" style="margin-top:2px"><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${ZONE_COL[z]};margin-right:5px"></i>${esc(zoneName(z))}</div></div></div>
+    <div class="btns"><button class="btn g sm2" data-act="editPerson" data-id="${esc(p.id)}">Edit</button><button class="btn g sm2" data-act="showOnMap" data-id="${esc(p.id)}">${p.place ? 'Show on map' : 'Place on map'}</button></div>
+    ${p.note ? `<p style="white-space:pre-wrap;margin:12px 0 0;font-size:14.5px;overflow-wrap:anywhere">${esc(p.note)}</p>` : ''}
+    <div class="lbl" style="margin-top:14px">Who they are</div>
+    <div class="chips" style="margin-top:8px">${p.traits.map(t => `<button class="chip" data-act="trait" data-id="${esc(t.id)}">${esc(t.text)}</button>`).join('')}<button class="chip add" data-act="traits">${p.traits.length ? '+ trait' : '+ Add a trait'}</button></div>
+    <p class="sm" style="margin:6px 0 0">Traits describe the person and are never scored.</p></div>`;
+  h += `<div class="card"><div class="between"><span class="lbl">What they did</span><button class="btn sm2" data-act="logAction" data-id="${esc(p.id)}">+ Log an action</button></div>`;
+  if (recent.length) {
+    h += `<div class="sm" style="margin-top:10px">Last 90 days</div><div class="mix" style="margin-top:6px">${LEVELS.map(i => cnt[i] ? `<span style="flex:${cnt[i]};background:${LEVEL_COL[i]}"></span>` : '').join('')}</div>
+      <div class="mixl">${[3, 4, 2, 1, 0].filter(i => cnt[i]).map(i => `<span><b style="background:${LEVEL_COL[i]}"></b>${cnt[i]} ${esc(levelName(i).toLowerCase())}</span>`).join('')}<span>· last 90 days</span></div>`;
+  }
+  if (acts.length) {
+    let last = '';
+    acts.forEach(a => {
+      const ym = a.date.slice(0, 7);
+      if (ym !== last) { last = ym; const d = new Date(ym + '-01T00:00:00'); h += `<div class="month">${isNaN(d) ? '' : d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}</div>`; }
+      h += `<button class="act" data-act="action" data-id="${esc(a.id)}"><span class="ld" style="background:${LEVEL_COL[a.level]}"></span><span class="grow"><span style="display:block;font-weight:600;overflow-wrap:anywhere">${esc(a.title)}</span>${a.detail ? `<span class="sm" style="display:block;overflow-wrap:anywhere">${esc(trunc(a.detail, 140))}</span>` : ''}<span class="sm" style="display:block">${esc(levelName(a.level))} · ${esc(fmtDateKey(a.date))}</span></span></button>`;
+    });
+  } else h += `<p class="sm" style="margin:10px 0 2px">Nothing logged yet. Each action gets its own level, wherever they sit on your map.</p>`;
+  h += `</div>`;
+  const R = [['feel', 'How I feel about them', 'Not a verdict, just what’s true for you right now'], ['appreciate', 'What I appreciate', 'Small things count'], ['wish', 'What I wish were different', 'About the situation, or about me']];
+  h += `<div class="card"><div class="lbl">Reflections</div><p class="sm" style="margin:4px 0 0">Words, not numbers. Saved as you type.</p>
+    ${R.map(([k, l, ph]) => `<div class="fld"><label for="rf-${k}">${l}<span class="saved" id="sv-${k}">Saved</span></label><textarea class="in" id="rf-${k}" rows="3" maxlength="4000" data-in="refl" data-k="${k}" placeholder="${ph}">${esc(p.refl[k])}</textarea></div>`).join('')}</div>`;
+  const th = S.thoughts.filter(t => t.pid === p.id).sort((a, b) => b.date - a.date);
+  h += `<div class="card"><div class="between"><span class="lbl">Thoughts about ${esc(trunc(p.name, 18))}</span><button class="link" data-act="thoughtAbout" data-id="${esc(p.id)}">+ Write one</button></div>
+    ${th.length ? th.slice(0, 30).map(t => `<button class="tl" data-act="thought" data-id="${esc(t.id)}"><div class="between"><span>${typeTag(t.type)}</span><span class="sm">${esc(fmtWhen(t.date))}</span></div><div class="tx">${esc(trunc(t.text, 200))}</div></button>`).join('') : '<p class="sm" style="margin:8px 0 2px">None yet.</p>'}</div>`;
+  return h;
+}
+function curPerson() { const v = topView(); return v && v.type === 'person' ? getP(v.id) : null; }
+
+/* add or edit a person */
+function personSheet(p) {
+  const isNew = !p;
+  openSheet(() => `${sheetHead(isNew ? 'Add a person' : 'Edit person')}
+    <div class="fld" style="margin-top:4px"><label for="pN">Name</label><input class="in" id="pN" maxlength="60" autocomplete="off" value="${esc(p ? p.name : '')}" placeholder="Mai, Mom, my boss, a project…"></div>
+    <div class="err" id="pErr"></div>
+    <div class="fld"><label for="pR">Who they are to you (optional)</label><input class="in" id="pR" maxlength="60" value="${esc(p ? p.rel : '')}" placeholder="Friend, sister, coworker…"></div>
+    <div class="fld"><label for="pNote">Note (optional)</label><textarea class="in" id="pNote" rows="3" maxlength="4000" placeholder="Why are they where they are on your map?">${esc(p ? p.note : '')}</textarea></div>
+    ${p && p.place ? `<label class="toggle"><input type="checkbox" id="pOff"> Take them off the map</label>` : ''}
+    <button class="btn w" style="margin-top:12px" data-act="pSave" data-id="${esc(p ? p.id : '')}">${isNew ? 'Add person' : 'Save changes'}</button>
+    ${isNew ? '' : `<button class="btn d w" style="margin-top:12px" data-act="pDel" data-id="${esc(p.id)}">Delete ${esc(trunc(p.name, 20))}</button><p class="sm" style="margin:6px 0 0">Deleting also removes their logged actions. Thoughts about them stay in your library.</p>`}`,
+    { focus: isNew ? '#pN' : null });
+}
+function savePerson(id) {
+  const name = sLine($('#pN').value, 60);
+  if (!name) { $('#pErr').textContent = 'Add a name to continue.'; $('#pN').focus(); return; }
+  const rel = sLine($('#pR').value, 60), note = sStr($('#pNote').value, 4000).trim();
+  if (!id) {
+    const p = { id: uid(), name, rel, note, place: null, traits: [], refl: { feel: '', appreciate: '', wish: '' }, created: Date.now(), u: 0 };
+    S.people.push(p); commit();
+    const fromMap = !topView() && TAB === 'map';
+    if (fromMap) { closeSheet(); softRender(); toast('Added. Drag ' + name + ' onto the circle.'); }
+    else openView('person', p.id);
+    return;
+  }
+  const p = getP(id); if (!p) return closeSheet();
+  p.name = name; p.rel = rel; p.note = note;
+  const off = $('#pOff'); if (off && off.checked) p.place = null;
+  commit(); closeSheet(); softRender(); toast('Saved');
+}
+function deletePerson(id) {
+  const p = getP(id); if (!p) return;
+  S.people = S.people.filter(x => x.id !== id);
+  S.actions = S.actions.filter(a => a.pid !== id);
+  S.thoughts.forEach(t => { if (t.pid === id) t.pid = ''; });
+  commit();
+  popAllUI(); toast('Deleted ' + p.name);
+}
+
+/* traits */
+function traitsSheet(p) {
+  const has = t => p.traits.some(x => x.text.toLowerCase() === t.toLowerCase());
+  const pb = t => `<button class="chip${has(t) ? ' on' : ''}" data-act="preset" data-v="${esc(t)}" aria-pressed="${has(t)}">${esc(t)}</button>`;
+  openSheet(() => `${sheetHead('Who they are', 'Done')}
+    <p class="sm" style="margin:0 0 6px">Tap to add or remove. Traits describe the person and are never scored.</p>
+    <div class="fl" style="margin-top:12px">Bright sides</div><div class="chips">${BRIGHT.map(pb).join('')}</div>
+    <div class="fl" style="margin-top:14px">Tender sides</div><div class="chips">${TENDER.map(pb).join('')}</div>
+    <div class="fl" style="margin-top:14px">In your own words</div>
+    <div class="row0"><input class="in" id="tIn" maxlength="48" placeholder="Sometimes insecure"><button class="btn" data-act="tAdd" style="flex:none">Add</button></div>`, { live: true });
+}
+function traitSheet(p, t) {
+  openSheet(() => `${sheetHead('Edit trait')}
+    <input class="in" id="etIn" maxlength="48" value="${esc(t.text)}">
+    <p class="sm" style="margin:6px 0 0">Add nuance if it helps, like “sometimes” or “about money”.</p>
+    <div class="btns"><button class="btn d" data-act="etDel" data-id="${esc(t.id)}">Remove</button><button class="btn" data-act="etSave" data-id="${esc(t.id)}">Save</button></div>`);
+}
+
+/* actions */
+let ALV = -1;
+function actionSheet(p, a) {
+  const isNew = !a;
+  ALV = a ? a.level : -1;
+  openSheet(() => `${sheetHead(isNew ? 'Log an action' : 'Action')}
+    <p class="sm" style="margin:0 0 4px">${esc(p.name)}</p>
+    <div class="fld"><label for="aT">What did they do?</label><input class="in" id="aT" maxlength="120" value="${esc(a ? a.title : '')}" placeholder="Covered my shift without being asked"></div>
+    <div class="fld"><span class="fl">How did it land?</span><div class="lvb" id="lvb">${LEVELS.map(i => `<button type="button" data-act="alv" data-v="${i}" aria-pressed="${ALV === i}" style="${ALV === i ? `background:${LEVEL_COL[i]};border-color:${LEVEL_COL[i]};color:#fff` : `color:${LEVEL_INK[i]};background:${LEVEL_BG[i]}`}">${esc(levelName(i))}</button>`).join('')}</div></div>
+    <div class="fld"><label for="aD">What happened (optional)</label><textarea class="in" id="aD" rows="3" maxlength="4000" placeholder="Context, what you saw, how it unfolded">${esc(a ? a.detail : '')}</textarea></div>
+    <div class="fld"><label for="aDate">When</label><input class="in" id="aDate" type="date" value="${esc(a ? a.date : todayKey())}" max="${todayKey()}"></div>
+    <div class="err" id="aErr"></div>
+    <button class="btn w" style="margin-top:12px" data-act="aSave" data-p="${esc(p.id)}" data-id="${esc(a ? a.id : '')}">${isNew ? 'Log action' : 'Save changes'}</button>
+    ${isNew ? '' : `<button class="btn d w" style="margin-top:12px" data-act="aDel" data-id="${esc(a.id)}">Delete action</button>`}`,
+    { focus: isNew ? '#aT' : null });
+}
+function paintLevels() {
+  $$('#lvb button').forEach(b => { const i = +b.dataset.v, on = i === ALV; b.setAttribute('aria-pressed', on); b.style.background = on ? LEVEL_COL[i] : LEVEL_BG[i]; b.style.borderColor = on ? LEVEL_COL[i] : ''; b.style.color = on ? '#fff' : LEVEL_INK[i]; });
+}
+function saveAction(pid, id) {
+  const p = getP(pid); if (!p) return closeSheet();
+  const title = sLine($('#aT').value, 120);
+  if (!title) { $('#aErr').textContent = 'Give the action a short name.'; $('#aT').focus(); return; }
+  if (ALV < 0) { $('#aErr').textContent = 'Pick how it landed: one of the five levels.'; return; }
+  const vals = { title, level: ALV, detail: sStr($('#aD').value, 4000).trim(), date: sDate($('#aDate').value) || todayKey() };
+  if (id) { const a = S.actions.find(x => x.id === id); if (a) Object.assign(a, vals); }
+  else S.actions.push({ id: uid(), pid, created: Date.now(), u: 0, ...vals });
+  commit(); closeSheet(); softRender(); toast(id ? 'Saved' : 'Action logged');
+}
+function choosePersonSheet() {
+  const ps = [...S.people].sort((a, b) => a.name.localeCompare(b.name));
+  openSheet(() => `${sheetHead('Log an action')}<p class="sm" style="margin:0 0 6px">Who was it?</p>
+    ${ps.length ? ps.map(p => `<button class="li" data-act="logFor" data-id="${esc(p.id)}"><span class="av" style="background:${ZONE_COL[zoneOf(p.place)]}">${initial(p.name)}</span><span class="grow nm">${esc(p.name)}</span></button>`).join('') : '<div class="empty">Add a person first.</div>'}
+    <button class="btn g w" style="margin-top:10px" data-act="addPerson">+ Add a person</button>`);
+}
+
+/* =====================================================================
+   SETTINGS
+   ===================================================================== */
+function settingsView() {
+  const total = S.people.length + S.actions.length + S.thoughts.length + S.sessions.length;
+  const since = S.meta.lastExport ? 'Last backup ' + ago(S.meta.lastExport) + '.' : 'You haven’t exported a backup yet.';
+  const canShare = !!(navigator.canShare && (() => { try { return navigator.canShare({ files: [new File(['{}'], 'x.json', { type: 'application/json' })] }); } catch (e) { return false; } })());
+  let h = `<div class="card" id="syncBox">${syncInner()}</div>`;
+  h += `<div class="card"><div class="lbl">Backup</div>
+    <p class="sm" style="margin:6px 0 0">${since}${S.meta.changes ? ` <b style="color:var(--ink)">${plural(S.meta.changes, 'change')} since then.</b>` : ''}</p>
+    <div class="btns"><button class="btn" data-act="exportNow">Export</button>${canShare ? '<button class="btn g" data-act="shareBackup">Share</button>' : ''}<button class="btn g" data-act="importFile">Import</button></div>
+    <button class="link" style="margin-top:12px;font-size:14px" data-act="backupText">Show the backup as text</button>
+    <p class="sm" style="margin:10px 0 0">Bringing over your old Kokoro, boundary map or Stress Test data? Open <b>export-old-data.html</b> on this phone, save its file, then tap Import here.</p></div>`;
+  const prev = k => `<button data-act="setTheme" data-v="${k}" class="${!D.random && D.theme === k ? 'on' : ''}"><img alt="" src="${sceneURL(k, 'day', true)}"><b>${THEMES[k].name}</b></button>`;
+  h += `<div class="card"><div class="lbl">Theme</div><p class="sm" style="margin:6px 0 10px">Now showing ${THEMES[THEME].name}. ${D.random ? 'A new one is picked each time you open Kokoro.' : 'Locked.'}</p>
+    <div class="worlds">${Object.keys(THEMES).map(prev).join('')}</div>
+    <label class="toggle" style="margin-top:8px"><input type="checkbox" data-in="random" ${D.random ? 'checked' : ''}> Pick a random theme each time I open Kokoro</label></div>`;
+  h += `<div class="card"><div class="lbl">Names</div><p class="sm" style="margin:6px 0 0">Rename the map zones and the action levels. Saved as you type.</p>
+    <div class="fl" style="margin-top:12px">Map zones</div>
+    ${ZONES.map(k => `<div class="row0" style="margin-top:8px"><i style="width:12px;height:12px;border-radius:50%;background:${ZONE_COL[k]};flex:none"></i><input class="in" data-in="zname" data-k="${k}" maxlength="60" value="${esc(S.labels.zones[k])}" aria-label="Name for zone ${k}"></div>`).join('')}
+    <div class="fl" style="margin-top:14px">Action levels</div>
+    ${LEVELS.map(i => `<div class="row0" style="margin-top:8px">${levelDot(i, 12)}<input class="in" data-in="lname" data-i="${i}" maxlength="30" value="${esc(S.labels.levels[i])}" aria-label="Name for level ${i + 1}"></div>`).join('')}
+    <button class="link" style="margin-top:12px;font-size:14px" data-act="resetNames">Reset to the default names</button></div>`;
+  h += `<div class="card"><div class="lbl">Display</div>
+    <label class="toggle"><input type="checkbox" data-in="lite" ${D.lite ? 'checked' : ''}> Lite mode (no animation)</label>
+    ${D.autoLite && D.lite ? '<p class="sm" style="margin:0">Turned on by itself after Kokoro closed unexpectedly.</p>' : ''}</div>`;
+  h += `<div class="card"><div class="lbl">Diagnostics</div>
+    <div class="diag" style="margin-top:8px">${DIAG.length ? esc(DIAG.slice(-12).join('\n')) : 'No problems logged.'}</div>
+    <div class="btns"><button class="btn g sm2" data-act="copyDiag">Copy report</button><button class="btn g sm2" data-act="clearDiag">Clear</button></div></div>`;
+  h += `<div class="card"><div class="lbl">Erase</div><p class="sm" style="margin:6px 0 0">${SC.on ? 'Erases everything here and on every device that syncs with this one.' : 'Erases everything on this phone. Export a backup first.'}</p>
+    <button class="btn d w" style="margin-top:10px" data-act="eraseAll">Erase all data</button></div>`;
+  h += `<p class="sm" style="text-align:center;margin:6px 0 14px">Kokoro ${APP_VER} · ${plural(S.people.length, 'person', 'people')} · ${plural(S.actions.length, 'action')} · ${plural(S.thoughts.length, 'thought')} · ${plural(S.sessions.length, 'session')} · ${total ? 'saved on this phone' : 'nothing saved yet'}</p>`;
+  return h;
+}
+function markExported() { S.meta.lastExport = Date.now(); S.meta.changes = 0; persist(); }
+function exportNow() {
+  if (download(backupName(), backupJSON(S), 'application/json')) { markExported(); toast('Backup saved to your downloads'); softRender(); }
+  else backupTextSheet();
+}
+async function shareBackup() {
+  try { const f = new File([backupJSON(S)], backupName(), { type: 'application/json' }); await navigator.share({ files: [f], title: 'Kokoro backup' }); markExported(); softRender(); }
+  catch (e) { if (e && e.name !== 'AbortError') { logDiag('share: ' + e.message); backupTextSheet(); } }
+}
+function backupTextSheet() {
+  openSheet(() => `${sheetHead('Backup as text')}<p class="sm" style="margin:0 0 8px">Copy all of this and keep it somewhere safe, like a note. To restore it, save it as a .json file and use Import.</p>
+    <textarea class="in report" readonly id="bkText">${esc(backupJSON(S))}</textarea><button class="btn w" style="margin-top:10px" data-act="bkCopy">Copy</button>`);
+}
+let IMPORT = null;
+function onImportText(text) {
+  try { IMPORT = parseImport(text); }
+  catch (e) { IMPORT = null; openSheet(() => `${sheetHead('Can’t import')}<p>${esc((e && e.msg) || 'That file couldn’t be read.')}</p><button class="btn w" data-act="closeSheet">OK</button>`); return; }
+  const m = IMPORT.summary;
+  openSheet(() => `${sheetHead(m.kind === 'old' ? 'Import your old data' : 'Import backup')}
+    <p>This file has ${plural(m.people, 'person', 'people')}, ${plural(m.actions, 'action')}, ${plural(m.thoughts, 'thought')} and ${plural(m.sessions, 'session')}.</p>
+    ${m.notes.length ? `<ul class="sm" style="margin:0 0 8px;padding-left:18px">${m.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+    <p class="sm"><b>Merge</b> keeps everything you have, adds what’s new and updates anything changed more recently in the file. <b>Replace</b> swaps all your current data for this file${SC.on ? ', on every synced device' : ''}.</p>
+    <div class="btns"><button class="btn d" data-act="impReplace">Replace</button><button class="btn" data-act="impMerge">Merge</button></div>`);
+}
+function applyImport(mode) {
+  if (!IMPORT) return closeSheet();
+  const I = IMPORT.st; IMPORT = null;
+  if (mode === 'replace') {
+    const old = idsOf(S);
+    S.people = I.people; S.actions = I.actions; S.thoughts = I.thoughts; S.sessions = I.sessions; S.del = {};
+    S.labels = I.labels ? sLabels(I.labels) : sLabels({});
+    if (I.zones) Object.assign(S.labels.zones, I.zones);
+    fixAfterMerge(); touchAll(old); S.meta.changes += 1;
+    markDirty(); persist(); schedSync();
+    closeSheet(); goTab(TAB); toast('Data replaced');
+    return;
+  }
+  for (const col of SYNC_COLS) {
+    const L = new Map(S[col].map(x => [x.id, x]));
+    for (const x of I[col]) {
+      const cur = L.get(x.id), delAt = S.del[x.id] || 0;
+      if (!cur) { if (!delAt || (x.u || 0) > delAt) { S[col].push(x); L.set(x.id, x); } }
+      else if ((x.u || 0) > (cur.u || 0)) Object.assign(cur, x);
+    }
+  }
+  if (I.labels && (I.labels.u || 0) > (S.labels.u || 0)) S.labels = sLabels(I.labels);
+  if (I.zones) Object.assign(S.labels.zones, I.zones);
+  fixAfterMerge(); commit();
+  closeSheet(); softRender(); toast('Merged');
+}
+function eraseAll() {
+  S.people = []; S.actions = []; S.thoughts = []; S.sessions = []; S.labels = sLabels({}); S.meta.changes = 0;
+  DRAFT = { text: '', type: '', pid: '' }; saveDraft(); JUST_SAVED = '';
+  commit(); goTab('becoming'); toast('Everything was erased');
+}
+
+/* =====================================================================
+   FAB: quick add
+   ===================================================================== */
+function fabSheet() {
+  openSheet(() => `${sheetHead('Add')}
+    <div class="big3">
+      <button data-act="fabThought"><span class="ic" style="background:${TYPE_COL.spiral}">✎</span><span><b>Write a thought</b><span class="sm" style="display:block">Spiral, hope or fact</span></span></button>
+      <button data-act="fabAction"><span class="ic" style="background:${LEVEL_COL[3]}">●</span><span><b>Log an action</b><span class="sm" style="display:block">What someone did, and how it landed</span></span></button>
+      <button data-act="addPerson"><span class="ic" style="background:${ZONE_COL.ring2}">+</span><span><b>Add a person</b><span class="sm" style="display:block">Then place them on your map</span></span></button>
+    </div>`);
+}
+
+/* =====================================================================
+   EVENTS (one delegated handler for taps, one for typing)
+   ===================================================================== */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const act = el.dataset.act, id = el.dataset.id;
+  try { ACTIONS[act] && ACTIONS[act](el, id, e); }
+  catch (err) { logDiag('act ' + act + ': ' + (err && err.message)); toast('Something went wrong. Your data is safe.'); }
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset && e.target.dataset.act === 'word') { e.preventDefault(); e.target.click(); }
+  if (e.key === 'Enter' && e.target.id === 'tIn') { e.preventDefault(); ACTIONS.tAdd(); }
+});
+const ACTIONS = {
+  closeSheet: () => closeSheet(),
+  back: () => { if (LAY.length) popLayerUI(); else goTab(TAB); },
+  tab: el => goTab(el.dataset.v),
+  fab: () => fabSheet(),
+  fabThought: () => { goTab('becoming'); setTimeout(() => { const t = $('#newT'); if (t) t.focus(); }, 80); },
+  fabAction: () => choosePersonSheet(),
+  syncDot: () => goTab('settings'),
+  /* becoming */
+  draftType: el => { DRAFT.type = el.dataset.v; saveDraft(); setTypeButtons($('#draftTypes'), DRAFT.type); const e = $('#newErr'); if (e) e.textContent = ''; },
+  saveThought: () => saveThought(),
+  stressIt: (el, id) => stressIt(id),
+  stressItS: (el, id) => { saveThoughtEdits(true); stressIt(id); },
+  libF: el => { LIBF = el.dataset.v; LIBN = 40; softRender(); },
+  libMore: () => { LIBN += 60; softRender(); },
+  sesMore: () => { SESN += 20; softRender(); },
+  thought: (el, id) => thoughtSheet(id),
+  teType: el => { TEDIT.type = el.dataset.v; setTypeButtons($('#teTypes'), TEDIT.type); },
+  teSave: () => { if (saveThoughtEdits()) { closeSheet(); softRender(); toast('Saved'); } },
+  teDel: el => { if (!armed(el, 'Tap again to delete')) return; deleteThought(TEDIT.id); closeSheet(); softRender(); toast('Thought deleted'); },
+  newSession: () => pickSheet('new'),
+  addToSession: () => { const s = curSession(); if (s) pickSheet('add', s.id); },
+  pickF: el => { $$('.seg button', el.parentNode.parentNode).forEach(b => b.classList.toggle('on', b === el)); $$('#pickList .pick').forEach(r => r.classList.toggle('hidden', el.dataset.v !== 'all' && r.dataset.type !== el.dataset.v)); },
+  pickGo: () => pickGo(),
+  openSession: (el, id) => { if (getS(id)) openView('session', id); },
+  word: el => { const t = el.dataset.t, i = +el.dataset.i; const set = PICKS[t] || (PICKS[t] = new Set()); if (set.has(i)) set.delete(i); else set.add(i); el.classList.toggle('pk', set.has(i)); const x = $('#xerr-' + CSS.escape(t)); if (x) x.textContent = ''; },
+  extract: el => extract(el.dataset.t),
+  delNote: el => { if (!armed(el, 'Tap again')) return; const s = curSession(); if (!s) return; s.notes = s.notes.filter(n => n.id !== el.dataset.n); commit(); softRender(); },
+  unlinkT: el => { if (!armed(el, 'Tap again to remove')) return; const s = curSession(); if (!s) return; const t = el.dataset.t; s.thoughtIds = s.thoughtIds.filter(x => x !== t); s.notes = s.notes.filter(n => n.tid !== t); delete PICKS[t]; commit(); softRender(); toast('Removed from this session. The thought stays in your library.'); },
+  linkType: el => { LINKTYPE = el.dataset.v; setTypeButtons($('#linkTypes'), LINKTYPE); },
+  linkNew: () => {
+    const s = curSession(); if (!s) return;
+    const text = sStr($('#linkT').value, 2000).trim(), err = $('#linkErr');
+    if (!text) { err.textContent = 'Write the new thought first.'; return; }
+    if (!LINKTYPE) { err.textContent = 'Pick what kind of thought this is.'; return; }
+    const t = { id: uid(), text, type: LINKTYPE, pid: '', date: Date.now(), u: 0 };
+    S.thoughts.push(t); s.linked.push(t.id); LINKTYPE = ''; commit(); softRender(); toast('Saved and linked');
+  },
+  toggleOpen: () => { const s = curSession(); if (!s) return; flushTyping(); const was = s.open; S.sessions.forEach(x => { x.open = false; }); s.open = !was; commit(); softRender(); toast(s.open ? 'Session reopened' : 'Session closed'); },
+  delSession: el => { if (!armed(el, 'Tap again to delete the session')) return; const s = curSession(); if (!s) return; S.sessions = S.sessions.filter(x => x.id !== s.id); commit(); popLayerUI(); toast('Session deleted. Its thoughts stay in your library.'); },
+  report: () => { flushTyping(); const s = curSession(); if (s) reportSheet(s); },
+  repCopy: () => copyText($('#repBox').value).then(ok => toast(ok ? 'Copied. Paste it to Claude.' : 'Couldn’t copy. Select the text and copy it.')),
+  repDl: () => { download('stress-test-' + stamp(Date.now()) + '.md', $('#repBox').value, 'text/markdown') ? toast('Saved to your downloads') : toast('Couldn’t save. Use Copy instead.'); },
+  repShare: () => { navigator.share({ title: 'Stress test session', text: $('#repBox').value }).catch(() => {}); },
+  /* map and people */
+  addPerson: () => personSheet(null),
+  person: (el, id) => openView('person', id),
+  pf: el => { PF = +el.dataset.v; $$('#pfChips .chip').forEach(c => c.classList.toggle('on', +c.dataset.v === PF)); $('#plist').innerHTML = peopleList(); },
+  editPerson: (el, id) => { const p = getP(id); if (p) personSheet(p); },
+  pSave: (el, id) => savePerson(id),
+  pDel: (el, id) => { if (!armed(el, 'Tap again to delete')) return; deletePerson(id); },
+  showOnMap: (el, id) => { PULSE = id; goTab('map'); const d = $(`.mdot[data-id="${CSS.escape(id)}"]`); if (d) d.scrollIntoView({ block: 'center' }); if (!getP(id).place) toast('Drag them from “Not on the map yet” onto the circle.'); },
+  traits: () => { const p = curPerson(); if (p) traitsSheet(p); },
+  trait: (el, id) => { const p = curPerson(); const t = p && p.traits.find(x => x.id === id); if (t) traitSheet(p, t); },
+  preset: el => {
+    const p = curPerson(); if (!p) return; const v = el.dataset.v, low = v.toLowerCase();
+    if (p.traits.some(x => x.text.toLowerCase() === low)) p.traits = p.traits.filter(x => x.text.toLowerCase() !== low);
+    else if (p.traits.length < LIM.traits) p.traits.push({ id: uid(), text: v });
+    const on = p.traits.some(x => x.text.toLowerCase() === low); el.classList.toggle('on', on); el.setAttribute('aria-pressed', on);
+    commit(); render();
+  },
+  tAdd: () => {
+    const p = curPerson(), inp = $('#tIn'); if (!p || !inp) return; const v = sLine(inp.value, 48); if (!v) return;
+    if (!p.traits.some(x => x.text.toLowerCase() === v.toLowerCase()) && p.traits.length < LIM.traits) { p.traits.push({ id: uid(), text: v }); commit(); render(); toast('Added “' + v + '”'); }
+    inp.value = ''; inp.focus();
+  },
+  etSave: (el, id) => { const p = curPerson(), t = p && p.traits.find(x => x.id === id); const v = sLine($('#etIn').value, 48); if (t && v) { t.text = v; commit(); } closeSheet(); softRender(); },
+  etDel: (el, id) => { const p = curPerson(); if (p) { p.traits = p.traits.filter(x => x.id !== id); commit(); } closeSheet(); softRender(); },
+  logAction: (el, id) => { const p = getP(id); if (p) actionSheet(p, null); },
+  logFor: (el, id) => { const p = getP(id); if (p) actionSheet(p, null); },
+  action: (el, id) => { const a = S.actions.find(x => x.id === id), p = a && getP(a.pid); if (p) actionSheet(p, a); },
+  alv: el => { ALV = +el.dataset.v; paintLevels(); const e = $('#aErr'); if (e) e.textContent = ''; },
+  aSave: el => saveAction(el.dataset.p, el.dataset.id),
+  aDel: (el, id) => { if (!armed(el, 'Tap again to delete')) return; S.actions = S.actions.filter(x => x.id !== id); commit(); closeSheet(); softRender(); toast('Action deleted'); },
+  thoughtAbout: (el, id) => { DRAFT.pid = id; saveDraft(); goTab('becoming'); setTimeout(() => { const t = $('#newT'); if (t) t.focus(); }, 80); },
+  /* settings */
+  exportNow: () => exportNow(),
+  shareBackup: () => shareBackup(),
+  backupText: () => backupTextSheet(),
+  bkCopy: () => copyText($('#bkText').value).then(ok => { if (ok) { markExported(); toast('Copied'); } else toast('Couldn’t copy. Select the text and copy it.'); }),
+  importFile: () => { const f = $('#file'); f.value = ''; f.click(); },
+  impMerge: () => applyImport('merge'),
+  impReplace: el => { if (!armed(el, 'Tap again to replace')) return; applyImport('replace'); },
+  setTheme: el => { D.theme = el.dataset.v; D.random = false; saveDev(); applyTheme(D.theme); SCENE_KEY = ''; softRender(); },
+  resetNames: () => { S.labels = { ...sLabels({}), u: S.labels.u }; commit(); softRender(); toast('Names reset'); },
+  copyDiag: () => copyText(`Kokoro ${APP_VER}\n${navigator.userAgent}\nstorage ${STORAGE_OK ? 'ok' : 'blocked'} · lite ${D.lite} · sync ${SC.on ? SY.st : 'off'}\n` + DIAG.join('\n')).then(ok => toast(ok ? 'Report copied' : 'Couldn’t copy')),
+  clearDiag: () => { DIAG = []; lsSet(LS_DIAG, '[]'); softRender(); },
+  eraseAll: el => { if (!armed(el, SC.on ? 'Tap again: erase on every device' : 'Tap again to erase everything')) return; eraseAll(); },
+  syncSrvShow: () => { const f = $('#srvFld'); if (f) f.classList.remove('hidden'); },
+  syncConnect: async el => {
+    const pin = ($('#spin').value || '').trim(), srvIn = $('#ssrv'), server = srvIn && !$('#srvFld').classList.contains('hidden') ? srvIn.value.trim().replace(/\/+$/, '') : '';
+    const err = $('#syncErr');
+    if (!/^\d{4,8}$/.test(pin)) { err.textContent = 'Enter your PIN: 4 to 8 digits.'; return; }
+    if (server && !/^https?:\/\/[^\s"'<>]+$/.test(server)) { err.textContent = 'The address should start with https://'; return; }
+    if (!server && !pageServer()) { err.textContent = 'Add the address of your sync site.'; $('#srvFld').classList.remove('hidden'); return; }
+    el.disabled = true; el.textContent = 'Connecting…';
+    try {
+      const r = await connectSync(pin, server);
+      if (r === 'ask') {
+        openSheet(() => `${sheetHead('Your cloud already has data')}<p>This phone has data too. <b>Merge both</b> keeps everything from both places. <b>Use cloud copy</b> replaces this phone’s data with the cloud’s.</p>
+          <div class="btns"><button class="btn g" data-act="connCloud">Use cloud copy</button><button class="btn" data-act="connMerge">Merge both</button></div>`);
+        return;
+      }
+      setSync('ok'); toast(r === 'took' ? 'Connected. Your data came from the cloud.' : 'Connected'); syncNow(true); softRender();
+    } catch (e2) { if (err.isConnected) err.textContent = syncErrText(e2); el.disabled = false; el.textContent = 'Connect'; }
+  },
+  connMerge: () => { finishConnect('merge'); closeSheet(); syncNow(true); softRender(); toast('Connected and merged'); },
+  connCloud: el => { if (!armed(el, 'Tap again: use the cloud copy')) return; finishConnect('cloud'); closeSheet(); syncNow(true); softRender(); toast('Connected'); },
+  syncNowBtn: () => syncNow(true),
+  syncPin: () => { const v = ($('#spin2').value || '').trim(); if (!/^\d{4,8}$/.test(v)) return toast('Enter 4 to 8 digits'); SC.pin = v; saveSC(); SY.st = 'busy'; syncNow(true); },
+  syncOff: el => { if (!armed(el, 'Tap again to disconnect')) return; disconnectSync(); softRender(); toast('Sync is off. Your data stays on this phone.'); }
+};
+function saveThoughtEdits(quiet) {
+  const t = TEDIT && getT(TEDIT.id); if (!t) return false;
+  const text = sStr($('#teText').value, 2000).trim();
+  if (!text) { if (!quiet) $('#teErr').textContent = 'A thought can’t be empty.'; return false; }
+  const pid = $('#teP').value;
+  t.text = text; t.type = TEDIT.type; t.pid = getP(pid) ? pid : '';
+  /* a note's phrase came from the old wording; it stays as written */
+  commit(); return true;
+}
+
+document.addEventListener('input', e => {
+  const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'draftText') { DRAFT.text = el.value; typeSave('draft', saveDraft, 400); const er = $('#newErr'); if (er) er.textContent = ''; }
+  else if (k === 'pq') { PQ = el.value; $('#plist').innerHTML = peopleList(); }
+  else if (k === 'note') { const s = curSession(), n = s && s.notes.find(x => x.id === el.dataset.n); if (n) { n.comment = sStr(el.value, 4000); typeSave('note' + n.id, commit); } }
+  else if (k === 'concl') { const s = curSession(); if (s) { s.conclusion = sStr(el.value, 4000); typeSave('concl' + s.id, commit); } }
+  else if (k === 'refl') {
+    const p = curPerson(); if (!p) return; const key = el.dataset.k;
+    p.refl[key] = sStr(el.value, 4000);
+    typeSave('refl' + p.id + key, () => { commit(); const s = $('#sv-' + key); if (s) { s.classList.add('on'); setTimeout(() => s.classList.remove('on'), 1200); } }, 600);
+  }
+  else if (k === 'zname') { S.labels.zones[el.dataset.k] = sLine(el.value, 60) || ZONE_DEF[el.dataset.k]; typeSave('labels', commit); }
+  else if (k === 'lname') { S.labels.levels[+el.dataset.i] = sLine(el.value, 30) || LEVEL_DEF[+el.dataset.i]; typeSave('labels', commit); }
+});
+document.addEventListener('change', e => {
+  const el = e.target, k = el.dataset && el.dataset.in;
+  if (k === 'draftP') { DRAFT.pid = el.value; saveDraft(); }
+  else if (k === 'random') { D.random = el.checked; if (!D.random) D.theme = THEME; saveDev(); softRender(); }
+  else if (k === 'lite') { D.lite = el.checked; if (!D.lite) D.autoLite = false; saveDev(); applyLite(); softRender(); }
+  else if (el.id === 'file') {
+    const f = el.files && el.files[0]; if (!f) return;
+    if (f.size > 20e6) { toast('That file is too large to be a Kokoro backup.'); return; }
+    const r = new FileReader();
+    r.onload = () => onImportText(String(r.result || ''));
+    r.onerror = () => toast('Couldn’t read that file.');
+    r.readAsText(f);
+  }
+});
+
+start();
+})();
+</script>
+</body>
+</html>

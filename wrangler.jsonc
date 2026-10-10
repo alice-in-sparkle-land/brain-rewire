@@ -1,0 +1,19 @@
+{
+  // Kokoro: the app in /public + the sync API in worker.js
+  "name": "brain-rewire",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "brain-rewire-db",
+      "database_id": "bd2e7f19-de01-4bd5-89ae-5e188b72cd01"
+    }
+  ]
+}

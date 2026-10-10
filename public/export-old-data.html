@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#C9DFCB">
+<title>Export my old data</title>
+<style>
+:root{--ac:#3B7A4D;--ink:#1E2733;--mut:#646A71;--line:#E4DED1;--card:#FFFDF8;--bg:#F2F4EC}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Roboto,sans-serif;padding:0 0 40px}
+.hd{background:linear-gradient(#C9DFCB,#EFF4E7);padding:28px 18px 46px;display:flex;gap:12px;align-items:center}
+.stamp{width:42px;height:42px;border-radius:9px;background:#C8452C;color:#FFF6EC;font:600 25px/1 Georgia,serif;display:grid;place-items:center;transform:rotate(-4deg)}
+h1{font:600 22px/1.2 Georgia,serif;margin:0}
+.wrap{max-width:540px;margin:-30px auto 0;padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.ok{color:#2F6B3D;font-weight:700}.no{color:var(--mut)}
+.btn{display:block;width:100%;background:var(--ac);color:#fff;border:0;border-radius:12px;padding:13px;font:600 16px system-ui,sans-serif;margin-top:10px}
+.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.sm{font-size:13.5px;color:var(--mut)}
+textarea{width:100%;min-height:150px;font:12px/1.5 ui-monospace,monospace;border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:10px}
+.hidden{display:none}
+code{background:#F3EDE2;border-radius:6px;padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="hd"><div class="stamp">心</div><div><h1>Export my old data</h1><div class="sm" style="color:#3B4654">For Kokoro · reads your old tools on this phone</div></div></div>
+<div class="wrap">
+  <div class="card">
+    <b>What was found in this browser</b>
+    <div id="found" style="margin-top:8px"></div>
+  </div>
+  <div class="card" id="saveCard">
+    <p style="margin:0">This saves everything above into one file. Then open Kokoro, go to <b>Settings → Import</b> and pick that file. Nothing is changed or deleted in your old tools.</p>
+    <button class="btn" id="dl">Save the file</button>
+    <button class="btn g hidden" id="share">Share the file</button>
+    <button class="btn g" id="showTxt">Show as text instead</button>
+    <textarea id="txt" class="hidden" readonly></textarea>
+    <p class="sm" id="msg"></p>
+  </div>
+  <div class="card" id="fallback">
+    <b>Nothing found, or something missing?</b>
+    <p class="sm">Your phone may keep each old tool’s data with the file itself. Then do this once in each old tool:</p>
+    <ol class="sm" style="padding-left:20px">
+      <li>Open the old tool the way you usually do.</li>
+      <li>Tap the address bar, type <code>javascript:</code> yourself (Chrome removes it if you paste it).</li>
+      <li>Paste the line below right after it and tap Go. A file called <b>kokoro-old-data.json</b> is saved.</li>
+    </ol>
+    <textarea id="snip" readonly style="min-height:110px"></textarea>
+    <button class="btn g" id="copySnip">Copy the line</button>
+  </div>
+</div>
+<script>
+'use strict';
+(function(){
+  var KEYS = { kokoro: 'kokoro.v1', map: 'boundary-map-v2', stress: 'rewire-stresstest-v1' };
+  var NAMES = { kokoro: 'Kokoro (people and actions)', map: 'Boundary map', stress: 'Stress Test (thoughts and sessions)' };
+  function read(k){ try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+  var out = { app: 'kokoro-legacy', v: 1, exported: new Date().toISOString() }, any = false, html = '';
+  Object.keys(KEYS).forEach(function(n){
+    var d = read(KEYS[n]); out[n] = d;
+    var info = 'not found';
+    if (d) {
+      any = true;
+      if (n === 'kokoro') info = (d.people || []).length + ' people';
+      if (n === 'map') info = (d.items || []).filter(function(i){ return i && (i.name || i.xPct != null); }).length + ' dots';
+      if (n === 'stress') info = (d.thoughts || []).length + ' thoughts, ' + (d.sessions || []).length + ' sessions';
+    }
+    html += '<div class="row"><span>' + NAMES[n] + '</span><span class="' + (d ? 'ok' : 'no') + '">' + info + '</span></div>';
+  });
+  document.getElementById('found').innerHTML = html;
+  var text = JSON.stringify(out);
+  var p = function(n){ return String(n).padStart(2, '0'); }, d = new Date();
+  var name = 'kokoro-old-data-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '.json';
+  if (!any) document.getElementById('saveCard').classList.add('hidden');
+  var msg = document.getElementById('msg');
+  document.getElementById('dl').onclick = function(){
+    try {
+      var url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+      msg.textContent = 'Saved as ' + name + ' in your downloads.';
+    } catch (e) { msg.textContent = 'Couldn’t save the file. Use Share or Show as text.'; }
+  };
+  try {
+    var f = new File([text], name, { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      var sb = document.getElementById('share'); sb.classList.remove('hidden');
+      sb.onclick = function(){ navigator.share({ files: [f], title: 'Kokoro old data' }).catch(function(){}); };
+    }
+  } catch (e) { /* no sharing */ }
+  document.getElementById('showTxt').onclick = function(){ var t = document.getElementById('txt'); t.value = text; t.classList.remove('hidden'); t.select(); };
+  var snip = "(function(){var o={app:'kokoro-legacy',v:1,exported:new Date().toISOString()},k={kokoro:'kokoro.v1',map:'boundary-map-v2',stress:'rewire-stresstest-v1'};for(var n in k){try{o[n]=JSON.parse(localStorage.getItem(k[n])||'null')}catch(e){o[n]=null}}var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='kokoro-old-data.json';document.body.appendChild(a);a.click();})()";
+  document.getElementById('snip').value = snip;
+  document.getElementById('copySnip').onclick = function(){
+    var t = document.getElementById('snip'); t.select();
+    var done = function(){ document.getElementById('copySnip').textContent = 'Copied'; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(snip).then(done, function(){ try { document.execCommand('copy'); done(); } catch (e) {} });
+    else { try { document.execCommand('copy'); done(); } catch (e) {} }
+  };
+})();
+</script>
+</body>
+</html>
