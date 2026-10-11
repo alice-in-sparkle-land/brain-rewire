@@ -28,6 +28,16 @@ The database link lives in `wrangler.jsonc`, so a deploy from GitHub keeps it. T
 
 Kokoro sits behind the Access sign-in for Alice's Cabinet. When the sign-in runs out, Cloud sync shows **Sign in again**. Your changes stay on the phone and sync after you sign in.
 
+## Daily reminder
+
+Go to **Settings → Daily reminder** and turn on **Remind me every day**. The default time is 21:00, and you can change it.
+
+- **What you see:** "Time for a moment with Kokoro." The notification never contains your thoughts. Tapping it opens Kokoro.
+- **When it skips:** it's skipped on days you've already written a thought. This uses the synced data, so the phone has to have synced.
+- **How it's sent:** the Worker checks every 5 minutes, using the cron in `wrangler.jsonc`, and sends through Chrome's push service. The signing keys are created automatically and stored in D1, so there's nothing to set up.
+- **What it needs:** Cloud sync connected, and notifications allowed for the site.
+- **Late reminders:** if Samsung's battery saver holds a reminder back, allow Chrome to run in the background in the phone's battery settings.
+
 ## Bring over your old data (once)
 
 1. Put `public/export-old-data.html` on your phone, in the same place as your old tools.

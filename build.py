@@ -3,7 +3,7 @@
 import os, re
 R = os.path.dirname(os.path.abspath(__file__))
 src = lambda f: open(os.path.join(R, 'src', f), encoding='utf-8').read()
-js = '\n'.join(src(f) for f in ['data.js', 'scene.js', 'sync.js', 'app.js', 'views.js'])
+js = '\n'.join(src(f) for f in ['data.js', 'scene.js', 'sync.js', 'remind.js', 'app.js', 'views.js'])
 js = re.sub(r"^'use strict';\n", '', js, flags=re.M)
 html = f'''<!doctype html>
 <html lang="en">

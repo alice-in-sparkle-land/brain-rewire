@@ -470,7 +470,7 @@ function settingsView() {
   const total = S.people.length + S.actions.length + S.thoughts.length + S.sessions.length;
   const since = S.meta.lastExport ? 'Last backup ' + ago(S.meta.lastExport) + '.' : 'You haven’t exported a backup yet.';
   const canShare = !!(navigator.canShare && (() => { try { return navigator.canShare({ files: [new File(['{}'], 'x.json', { type: 'application/json' })] }); } catch (e) { return false; } })());
-  let h = `<div class="card" id="syncBox">${syncInner()}</div>`;
+  let h = `<div class="card" id="syncBox">${syncInner()}</div><div class="card" id="remindBox">${remindInner()}</div>`;
   h += `<div class="card"><div class="lbl">Backup</div>
     <p class="sm" style="margin:6px 0 0">${since}${S.meta.changes ? ` <b style="color:var(--ink)">${plural(S.meta.changes, 'change')} since then.</b>` : ''}</p>
     <div class="btns"><button class="btn" data-act="exportNow">Export</button>${canShare ? '<button class="btn g" data-act="shareBackup">Share</button>' : ''}<button class="btn g" data-act="importFile">Import</button></div>
@@ -689,7 +689,8 @@ const ACTIONS = {
   syncNowBtn: () => syncNow(true),
   signIn: () => { flushTyping(); persist(); location.reload(); },
   syncPin: () => { const v = ($('#spin2').value || '').trim(); if (!/^\d{4,8}$/.test(v)) return toast('Enter 4 to 8 digits'); SC.pin = v; saveSC(); SY.st = 'busy'; syncNow(true); },
-  syncOff: el => { if (!armed(el, 'Tap again to disconnect')) return; disconnectSync(); softRender(); toast('Sync is off. Your data stays on this phone.'); }
+  remindTest: () => remindTest(),
+  syncOff: el => { if (!armed(el, 'Tap again to disconnect')) return; if (PU.on) remindOff(true); disconnectSync(); softRender(); toast('Sync is off. Your data stays on this phone.'); }
 };
 function saveThoughtEdits(quiet) {
   const t = TEDIT && getT(TEDIT.id); if (!t) return false;
@@ -719,6 +720,8 @@ document.addEventListener('change', e => {
   const el = e.target, k = el.dataset && el.dataset.in;
   if (k === 'draftP') { DRAFT.pid = el.value; saveDraft(); }
   else if (k === 'random') { D.random = el.checked; if (!D.random) D.theme = THEME; saveDev(); softRender(); }
+  else if (k === 'remindOn') { if (el.checked) remindOn(); else remindOff(); }
+  else if (k === 'remindTime') remindTime(el.value);
   else if (k === 'lite') { D.lite = el.checked; if (!D.lite) D.autoLite = false; saveDev(); applyLite(); softRender(); }
   else if (el.id === 'file') {
     const f = el.files && el.files[0]; if (!f) return;

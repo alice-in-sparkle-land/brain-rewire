@@ -166,6 +166,7 @@ function setSync(st, msg = '') {
   const d = document.getElementById('sdot');
   if (d) { d.className = 'sdot s-' + st + (SC.on ? '' : ' hidden'); d.title = syncLine(); }
   const b = document.getElementById('syncBox'), a = document.activeElement; if (b && !(b.contains(a) && a.tagName === 'INPUT')) b.innerHTML = syncInner();
+  const rb = document.getElementById('remindBox'); if (rb && !rb.contains(document.activeElement) && typeof drawRemind === 'function') drawRemind();
 }
 function ago(t) {
   if (!t) return 'never';

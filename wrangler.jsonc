@@ -3,6 +3,8 @@
   "name": "brain-rewire",
   "main": "worker.js",
   "compatibility_date": "2025-09-01",
+  // checks every 5 minutes whether a daily reminder is due
+  "triggers": { "crons": ["*/5 * * * *"] },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

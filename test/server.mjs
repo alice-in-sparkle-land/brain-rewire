@@ -4,12 +4,25 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import worker from '../worker.js';
+import worker, { runReminders } from '../worker.js';
+import { webcrypto } from 'node:crypto';
 
 const PORT = +process.env.PORT || 8787;
 const PUB = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../public');
 let sql = new DatabaseSync(':memory:');
 const K = { delay: 0, down: false, pin: '2468', access: false };
+const PUSHES = []; const PUSH_STATUS = {};
+const b64d = s => Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/'), 'base64');
+async function verifyVapid(auth) {
+  try {
+    const m = /^vapid t=([^,]+), k=(.+)$/.exec(auth || ''); if (!m) return false;
+    const [h, b, sig] = m[1].split('.');
+    const key = await webcrypto.subtle.importKey('raw', b64d(m[2]), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+    const ok = await webcrypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, b64d(sig), Buffer.from(h + '.' + b));
+    const claims = JSON.parse(b64d(b).toString());
+    return ok && claims.aud === 'http://localhost:' + PORT && claims.exp > Date.now() / 1000 && /^https:/.test(claims.sub);
+  } catch (e) { return false; }
+}
 
 function stmt(q, args = []) {
   const o = {
@@ -37,10 +50,24 @@ const ASSETS = {
 http.createServer(async (rq, rs) => {
   const chunks = []; for await (const c of rq) chunks.push(c);
   const body = Buffer.concat(chunks);
+  if (rq.url.startsWith('/__push/')) {
+    const id = rq.url.slice(8);
+    PUSHES.push({ id, t: Date.now(), ttl: rq.headers['ttl'], len: body.length, vapid: await verifyVapid(rq.headers['authorization']) });
+    rs.writeHead(PUSH_STATUS[id] || 201); rs.end(); return;
+  }
+  if (rq.url.startsWith('/__pushlog')) { rs.end(JSON.stringify(PUSHES)); return; }
+  if (rq.url.startsWith('/__cron')) {
+    const now = Number(new URL('http://x' + rq.url).searchParams.get('now')) || Date.now();
+    const out = await runReminders({ DB, PIN: K.pin, ASSETS }, now);
+    rs.end(JSON.stringify(out)); return;
+  }
   if (rq.url === '/__knob') {
     const o = JSON.parse(body.toString() || '{}');
     if ('access' in o) K.access = o.access; if ('delay' in o) K.delay = o.delay; if ('down' in o) K.down = o.down; if ('pin' in o) K.pin = o.pin;
     if (o.reset) { sql = new DatabaseSync(':memory:'); }
+    if (o.pushStatus) Object.assign(PUSH_STATUS, o.pushStatus);
+    if (o.clearPushes) PUSHES.length = 0;
+    if (o.subs) { try { rs.end(JSON.stringify(sql.prepare('SELECT * FROM push_subs').all())); } catch (e) { rs.end('[]'); } return; }
     if (o.clearGuard) { try { sql.exec('DELETE FROM guard'); } catch (e) { /* no table yet */ } }
     if (o.raw) { try { rs.end(JSON.stringify(sql.prepare("SELECT name, rev FROM slots").all())); } catch (e) { rs.end('[]'); } return; }
     rs.end('ok'); return;

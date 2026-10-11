@@ -279,6 +279,7 @@ function start() {
   window.addEventListener('pagehide', () => { flushTyping(); markVisible(false); flushOnHide(); });
   window.addEventListener('online', () => { if (SC.on) syncNow(false); });
   if (SC.on) { setSync('busy'); syncNow(true); }
+  setTimeout(remindRefresh, 4000);
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(e => logDiag('sw: ' + e.message));
 }
 /* text boxes save as you type (debounced); this writes any pending text right away */
